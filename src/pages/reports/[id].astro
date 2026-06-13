@@ -58,14 +58,18 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
         <span class="report-date">{formattedDate}</span>
       </div>
 
-      {/* PDF download — uses --color-accent per WCAG role split (D-04) */}
+      {/* Primary CTA — open the full PDF. Filled emerald button (--color-accent,
+          8:1 on cream) per WCAG role split (D-04). The web page is a teaser;
+          the full analysis lives in the PDF. */}
       <a
         href={report.data.pdfUrl}
-        class="report-pdf-link"
+        class="report-pdf-cta"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={`Read the full ${report.data.title} report as a PDF`}
       >
-        Read full report (PDF)
+        <span>Read the full report (PDF)</span>
+        <span class="report-pdf-cta__arrow" aria-hidden="true">→</span>
       </a>
     </header>
 
@@ -155,30 +159,45 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     margin-right: var(--space-md);
   }
 
-  /* PDF link — accent color per WCAG role split D-04 (--color-accent is the link color) */
-  .report-pdf-link {
+  /* Primary CTA — filled emerald button (--color-accent fill, cream text = 8:1 AAA).
+     This is the main action on the page: open the full report PDF. */
+  .report-pdf-cta {
     display: inline-flex;
     align-items: center;
     gap: var(--space-sm);
     font-family: var(--font-body);
     font-size: var(--text-body);
-    font-weight: 400;
-    color: var(--color-accent);
-    text-decoration: none;
-    border: 1px solid var(--color-accent);
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: 2px;
-    transition: background-color 0.15s ease, color 0.15s ease;
-  }
-
-  .report-pdf-link:hover {
+    font-weight: 700;            /* Butler Bold — strong, unmissable CTA */
+    letter-spacing: 0.01em;
+    color: var(--color-surface); /* cream text on emerald fill */
     background: var(--color-accent);
-    color: var(--color-surface);
+    text-decoration: none;
+    padding: var(--space-md) var(--space-xl);
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    transition: background-color 0.18s ease, border-color 0.18s ease,
+      transform 0.18s ease, box-shadow 0.18s ease;
   }
 
-  .report-pdf-link:focus-visible {
+  .report-pdf-cta:hover {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-surface);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px -8px rgba(29, 57, 55, 0.5);
+  }
+
+  .report-pdf-cta__arrow {
+    transition: transform 0.18s ease;
+  }
+
+  .report-pdf-cta:hover .report-pdf-cta__arrow {
+    transform: translateX(3px);
+  }
+
+  .report-pdf-cta:focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 
   /* MDX body */
@@ -200,8 +219,8 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   }
 
   .report-content :global(h3) {
-    font-family: var(--font-body);
-    font-size: 1.125rem;
+    font-family: var(--font-display);  /* The Seasons — subheadings */
+    font-size: 1.4rem;
     font-weight: 400;
     color: var(--color-ink);
     margin: var(--space-2xl) 0 var(--space-md) 0;
@@ -276,7 +295,7 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   }
 
   .report-content :global(strong) {
-    font-weight: 600;
+    font-weight: 700;  /* Butler Bold (shipped weight; no synthetic 600) */
     color: var(--color-ink);
   }
 

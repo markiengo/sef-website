@@ -1,10 +1,10 @@
 ---
 title: "Vietnam's Gold: A Quantitative Decomposition of the SJC Wedge"
 description: >
-  Vietnam's domestic gold price (SJC) is driven by two observable betas — the
-  international USD gold cycle and USD/VND — plus a persistent domestic wedge
-  that widens nonlinearly under stress. This report decomposes and quantifies
-  each component, explaining why SJC consistently outruns global benchmarks.
+  Why Vietnam's SJC gold bars trade well above global import parity — a
+  quantitative decomposition of the domestic wedge into the USD gold cycle,
+  USD/VND, and a structurally persistent premium the central bank treats as
+  macro-relevant.
 division: Macro
 type: Report
 sector: ["Precious Metals", "Macro Finance"]
@@ -16,175 +16,35 @@ publishedAt: 2026-02-17
 ---
 
 import sjcChart from './_assets/chart-sjc-gold-prices.png';
-import fxChart from './_assets/chart-usdvnd.png';
 
-## Executive Summary
+Translate the world gold price into dong, adjust for the exchange rate, and you
+should land on Vietnam's domestic price. You don't. SJC bars trade *above* import
+parity by a margin the central bank treats as macro-relevant — in early 2026,
+roughly **11–16% of the price of gold itself.**
 
-Vietnam's domestic gold price, most clearly reflected through Saigon Jewellery
-Company (SJC) bars, has been driven by two observable betas: the international
-USD gold cycle and the USD/VND exchange rate. These two explain the direction
-of the move across the long window, accounting for a meaningful share of the
-baseline appreciation.
+We decompose that gap into three observable terms:
 
-However, neither explains the feature that repeatedly makes Vietnam's gold
-market look anomalous relative to peers: a **persistent, regulated domestic
-wedge** that can widen nonlinearly in times of stress. In a bullion market
-where supply and arbitrage are structurally controlled, the wedge behaves like a
-convenience-yield premium on deliverable, verifiable bars — in situations where:
+> **SJC = κ × Gold(USD) × USD/VND + Wₜ**
 
-- households' demand for monetary substitutes rises,
-- substitution of gold form degrades (bars vs. rings), or
-- intermediaries reprice inventory risk.
+The first two are mechanical translation. The third — **Wₜ, the domestic wedge** —
+is the structurally persistent premium that parity math leaves unexplained, and
+it is what this report quantifies.
 
-Vietnam's bullion market was historically shaped by Decree 24–era supply
-rigidity, with episodic quantity injections via auctions and discrete sales
-rather than continuous market-making, along with structurally thin two-way
-liquidity. Demand shocks therefore clear primarily through the domestic gold
-*price* rather than through quantity adjustment. In periods of stress,
-expectations and positioning intensify this dynamic, generating a
-self-reinforcing "scarcity + expectations" feedback loop.
+<img src={sjcChart.src} alt="SJC domestic gold price versus the import-parity baseline, showing a persistent and widening wedge" width={sjcChart.width} height={sjcChart.height} />
 
-This report formalises the framework around **three observable components**:
+**The full report covers:**
 
-1. **Global gold price** — the USD benchmark
-2. **USD/VND** — the exchange-rate translation layer
-3. **The domestic wedge (Wₜ)** — the structurally persistent premium
+- a worked 26 January 2026 decomposition — global gold ≈ $5,000/oz, USD/VND at 26,142, an implied wedge of ~19.4M VND/tael;
+- why Decree 24–era supply rigidity makes the domestic supply curve vertical, and why the premium attaches to *bars*, not rings;
+- how household "goldization" turns scarcity into a self-reinforcing loop — and the conditions that make the wedge compress.
+
+Vietnam's gold premium is not a mispricing or a cultural quirk. It is the
+predictable output of a globally priced asset forced through a domestically
+constrained, thin-liquidity market.
+
+*The complete decomposition, charts, and underlying data are in the PDF.*
 
 ---
 
-## Key Quantitative Framework
-
-### Price-Level Decomposition
-
-The domestic SJC price is modelled as import-parity plus a domestic premium:
-
-> **SJC price = κ × G(t) × FX(t) + Wₜ**
-
-Where:
-- **κ ≈ 1.2057** (unit conversion: troy ounce → Vietnamese tael, 37.5 g / 31.1035 g)
-- **G(t)** = global gold price in USD/oz
-- **FX(t)** = USD/VND exchange rate
-- **Wₜ** = the domestic wedge (taxes, scarcity rents, risk premia, policy premium)
-
-### Worked Example (26 January 2026)
-
-| Input | Value |
-|-------|-------|
-| Global gold price | ~5,000 USD/oz |
-| USD/VND | 26,142 |
-| Import parity | ~157.6M VND/tael |
-| SJC domestic sell | ~177.0M VND/tael |
-| **Wedge (Wₜ)** | **~19.4M VND/tael (~11–16% of price)** |
-
----
-
-## Figure 1: SJC Gold Prices
-
-<img src={sjcChart.src} alt="SJC gold price trend chart showing domestic price versus import-parity baseline" width={sjcChart.width} height={sjcChart.height} />
-
-*Source: LSEG Workspace*
-
----
-
-## Figure 2: USD/VND Exchange Rate
-
-<img src={fxChart.src} alt="USD/VND exchange rate chart illustrating the FX translation component of Vietnamese gold pricing" width={fxChart.width} height={fxChart.height} />
-
-*Source: LSEG Workspace*
-
----
-
-## Why SJC Outruns World Benchmarks
-
-In a frictionless environment, a globally priced commodity like gold should
-obey a loose parity condition once you translate units and currency. Any large
-deviation should self-correct: if domestic prices run rich, metal flows in.
-Yet SJC prices repeatedly trade above import parity by an economically large
-margin that the State Bank of Vietnam (SBV) treats as macro-relevant.
-
-**Two structural reasons explain persistence:**
-
-**1. Supply does not respond elastically.** When people suddenly want more SJC
-bars, there is no automatic flow of new supply. The domestic supply curve
-becomes effectively vertical under Decree 24–era constraints, so demand shocks
-load entirely onto price. The 2024 SBV gold bar auctions — the first in roughly
-eleven years — are direct evidence that the market was not generating an elastic
-supply response at prevailing prices.
-
-**2. SJC is product-segmented.** The wedge attaches disproportionately to SJC
-bars versus rings or jewellery because bars carry superior *deliverability,
-standardisation, and resale liquidity*. In other words, the premium is not a
-generic cultural preference — it is a microstructure and policy outcome.
-
----
-
-## The Wedge's Structural Channels
-
-### Policy-Induced Supply Constraints
-
-Decree 24 concentrated gold bar production under government control. Supply
-becomes *policy-elastic* rather than price-elastic: when demand accelerates,
-the adjustment loads onto the wedge (Wₜ), not onto quantity.
-
-Decree 232/2025 is a structural break, signalling an intent to broaden the
-production perimeter. But markets respond to *implementation certainty*, not
-intent — and implementation uncertainty itself becomes a wedge creator during
-transition windows.
-
-### "Goldization" and the Hoarding Loop
-
-For a large share of Vietnamese households, physical SJC bars function as a
-**monetary asset**: a portable, settlement-ready store of value outside the
-banking system. This demand is reflexive:
-
-- Substitution across gold forms is imperfect under stress (rings ≠ bars for
-  resale certainty)
-- Expectations convert scarcity into convexity: if agents believe supply will
-  remain tight, holding SJC resembles an asset with a convenience yield *plus*
-  an embedded policy option
-- A self-reinforcing loop can form: higher prices → reduced seller willingness
-  → tighter supply → higher prices
-
-### FX Pass-Through: Two Channels
-
-USD/VND enters the decomposition through two distinct mechanisms:
-
-1. **Mechanical translation** — even under full arbitrage, VND gold returns
-   inherit USD gold returns plus the change in exchange rate
-2. **Macro-hedge channel** — gold demand is sensitive to the *distribution* of
-   future FX outcomes. When tail FX risks rise, the convenience-yield component
-   of holding SJC rises, which can lift Wₜ even before spot depreciation occurs
-
----
-
-## Vietnam Macro Snapshot (2026 Context)
-
-| Indicator | Value |
-|-----------|-------|
-| Real GDP | US$476.3 billion |
-| Real GDP growth (YoY) | 7.09% |
-| GDP per capita | US$4,700 |
-| Inflation | 3.63% |
-| Unemployment | 2.24% |
-| Population | 100.9 million |
-| Total FDI | US$38.2 billion |
-
----
-
-## Conclusion
-
-The SJC wedge is not a mysterious mispricing. It is the **predictable outcome**
-of a globally priced asset trading through a domestically constrained,
-compliance-sensitive, thin-liquidity market — where the wedge is the price of
-immediacy and certainty under constraint.
-
-Closing Wₜ requires not only supply injections but also durable market-making
-conditions. When the supply environment loosens or market-making depth improves,
-the premium can compress quickly even if global gold remains high — the
-asymmetry runs both ways.
-
----
-
-*This report has been prepared by Saigon Equities Forum for educational and
-informational purposes. It does not constitute investment advice. The views
-reflect the author's independent academic analysis.*
+*Prepared by Saigon Equities Forum for educational and informational purposes.
+Not investment advice.*
