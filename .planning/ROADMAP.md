@@ -53,7 +53,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 5 plans
   - [x] 02-01-PLAN.md — Foundation fixes: --font-body token → Kollektif, slugify utility, global site header + footer in BaseLayout
   - [x] 02-02-PLAN.md — Publications library index at /publications: masthead, cover-image card grid, instant client-side filter island (PUB-01/PUB-02)
-  - [ ] 02-03-PLAN.md — Route relocation /reports/[id] → /publications/[id]: byline links, breadcrumb, redirect in astro.config.mjs (PUB-03/04/05/06)
+  - [x] 02-03-PLAN.md — Route relocation /reports/[id] → /publications/[id]: byline links, breadcrumb, redirect in astro.config.mjs (PUB-03/04/05/06)
   - [ ] 02-04-PLAN.md — Team profile stubs at /team/[slug]: derived from report frontmatter, never dead-links, privacy-safe (PUB-05)
   - [ ] 02-05-PLAN.md — Cover generation + 5 seeded reports from context/Deliverables/: Macro + Equity divisions, multiple sectors (PUB-01/02/03/04)
 **UI hint**: yes
@@ -117,7 +117,7 @@ Phases execute in dependency order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 5 can
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete |  |
-| 2. Publications Library | 2/5 | In Progress|  |
+| 2. Publications Library | 3/5 | In Progress|  |
 | 3. Landing Page | 0/? | Not started | - |
 | 4. Team & Analyst Profiles | 0/? | Not started | - |
 | 5. News & Insights | 0/? | Not started | - |
