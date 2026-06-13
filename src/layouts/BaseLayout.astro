@@ -1,10 +1,11 @@
 ---
 // src/layouts/BaseLayout.astro
 // Root layout for all pages.
-// Imports the token layer (tokens.css) so every page inherits the SEF design system.
-// Plan 02 adds: global.css reset, Astro Fonts API (<Font> components), full type defaults.
+// Imports the design-system token layer and global base styles.
+// Astro Fonts API: Font component emits preload + @font-face for Cinzel and Inter.
 
 import '../styles/tokens.css';
+import { Font } from 'astro:assets';
 
 interface Props {
   title: string;
@@ -23,18 +24,11 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <!-- Astro Fonts API: emits preload links + @font-face with font-display:swap (BRD-04) -->
+    <Font cssVariable="--font-cinzel" preload />
+    <Font cssVariable="--font-inter" preload />
   </head>
   <body>
     <slot />
   </body>
 </html>
-
-<style>
-  body {
-    background-color: var(--color-surface);
-    color: var(--color-ink);
-    font-family: var(--font-body);
-    margin: 0;
-    padding: 0;
-  }
-</style>
