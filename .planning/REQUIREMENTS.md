@@ -26,7 +26,7 @@ Requirements for the initial recruitment-ready launch. Each maps to a roadmap ph
 ### Publications Library
 
 - [x] **PUB-01**: A visitor can browse all publications in a library view
-- [ ] **PUB-02**: A visitor can filter publications by Division (Macro / Equity), Type (Report · Note · Snapshot · Insight), and Sector tag
+- [x] **PUB-02**: A visitor can filter publications by Division (Macro / Equity), Type (Report · Note · Snapshot · Insight), and Sector tag
 - [ ] **PUB-03**: Each report has a web summary page rendering an exec overview plus key charts natively
 - [ ] **PUB-04**: Each report page offers a "Read full report" action that opens/downloads the full PDF
 - [x] **PUB-05**: Each report displays an analyst byline that links to that analyst's profile page
@@ -103,7 +103,7 @@ Explicitly excluded for v1. Documented to prevent scope creep.
 | LND-04 | Phase 3 — Landing Page | Pending |
 | LND-05 | Phase 3 — Landing Page | Pending |
 | PUB-01 | Phase 2 — Publications Library | Complete |
-| PUB-02 | Phase 2 — Publications Library | Pending |
+| PUB-02 | Phase 2 — Publications Library | Complete |
 | PUB-03 | Phase 2 — Publications Library | Pending |
 | PUB-04 | Phase 2 — Publications Library | Pending |
 | PUB-05 | Phase 2 — Publications Library | Complete |

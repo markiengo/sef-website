@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 2 planned (5 plans, 3 waves); decision-coverage gate overridden — plan-checker Dim7 confirmed all D-01..D-12 implemented, only literal D-ID citations absent
-last_updated: "2026-06-13T22:32:57.448Z"
+last_updated: "2026-06-13T22:39:01.462Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 9
-  completed_plans: 5
+  completed_plans: 6
   percent: 17
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-13)
 ## Current Position
 
 Phase: 2 (Publications Library) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-06-13
 
-Progress: [██████░░░░] 56%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [██████░░░░] 56%
 | Phase 01-foundation P02 | 20min | 2 tasks | 11 files |
 | Phase 01-foundation P03 | 15min | 2 tasks | 8 files |
 | Phase 02-publications-library P01 | 2 | 2 tasks | 3 files |
+| Phase 02-publications-library P02 | 8 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [01-03]: src/content.config.ts (NOT src/content/config.ts) — Content Layer config filename in Astro 5.x+/6.x; glob() loader with base './src/content/reports'
 - [01-03]: MOD-02 seam — src/lib/content.ts is the only astro:content importer; pages/layouts must import from lib/content
 - [01-03]: Privacy boundary established at schema level — analysts string array (names only); email/phone/schoolEmail never modeled (T-01-PII mitigated)
+- [Phase ?]: filter island uses is:inline + DOMContentLoaded to ensure DOM ready before querying elements
+- [Phase ?]: data-sector encoded as pipe-delimited string; JS uses split('|').includes() to safely match multi-value sector field
+- [Phase ?]: publications library progressive enhancement: all cards render in static HTML, JS only toggles visibility
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T22:32:57.437Z
+Last session: 2026-06-13T22:39:01.453Z
 Stopped at: Phase 2 planned (5 plans, 3 waves); decision-coverage gate overridden — plan-checker Dim7 confirmed all D-01..D-12 implemented, only literal D-ID citations absent
 Resume file: None
