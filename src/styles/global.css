@@ -30,21 +30,21 @@ html {
 }
 
 /* ─── Body defaults ──────────────────────────────────────────────────────── */
-/* Butler Roman (400) as body default. Butler is a high-contrast text serif —
-   it reads at 400, not Light; generous line-height keeps dense copy comfortable. */
+/* The Seasons (400) as body default — a high-contrast display serif. Generous
+   line-height keeps dense copy comfortable; bump size/weight if it reads thin. */
 
 body {
   background-color: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font-body);
-  font-weight: 400;  /* Butler Roman — default body weight */
+  font-weight: 400;  /* The Seasons Regular — default body weight */
   font-size: var(--text-body);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Headings — The Seasons (display serif) ───────────────────────────── */
+/* ─── Headings — Cinzel (display serif) ────────────────────────────────── */
 
 h1,
 h2,
@@ -52,19 +52,19 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-display);  /* The Seasons — all headings */
+  font-family: var(--font-display);  /* Cinzel — all headings */
   font-weight: 400;
   line-height: 1.2;
 }
 
 /* ─── Display role ──────────────────────────────────────────────────────── */
 /* Hero headlines, section identity moments, the SEF wordmark.
-   Same family as headings (The Seasons); tighter leading for large sizes. */
+   Same family as headings (Cinzel); tighter leading for large sizes. */
 
 .display,
 [data-display] {
   font-family: var(--font-display);
-  font-weight: 400;  /* The Seasons Regular */
+  font-weight: 400;  /* Cinzel Regular */
   line-height: 1.1;
 }
 

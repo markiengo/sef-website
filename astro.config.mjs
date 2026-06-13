@@ -12,12 +12,32 @@ export default defineConfig({
   // Uses fontProviders.local() for self-hosted woff2 files.
   // font-display: swap is the API default. Preload links emitted by <Font> in BaseLayout.
   //
-  // Type scheme: The Seasons (display serif) → all headings/display/logo.
-  //              Butler (text serif) → body + everything else.
+  // Type scheme: Cinzel (display serif) → all headings/display/logo.
+  //              The Seasons (serif) → body + everything else.
   // Vietnamese note: neither font ships the precomposed VN tone-mark glyphs
   // (U+1EA0–1EF9) or ₫ (U+20AB). `fallbacks` routes those glyphs per-character
   // to a system serif (Georgia/Times) so VN names render without tofu boxes.
   fonts: [
+    {
+      provider: fontProviders.local(),
+      name: 'Cinzel',
+      cssVariable: '--font-cinzel',
+      fallbacks: ['Georgia', 'Times New Roman', 'serif'],
+      options: {
+        variants: [
+          {
+            weight: 400,
+            style: 'normal',
+            src: ['./public/fonts/cinzel-regular.woff2'],
+          },
+          {
+            weight: 700,
+            style: 'normal',
+            src: ['./public/fonts/cinzel-bold.woff2'],
+          },
+        ],
+      },
+    },
     {
       provider: fontProviders.local(),
       name: 'The Seasons',
@@ -25,48 +45,23 @@ export default defineConfig({
       fallbacks: ['Georgia', 'Times New Roman', 'serif'],
       options: {
         variants: [
+          // The Seasons Light 300 — optional lighter body / large lead text
           {
             weight: 300,
             style: 'normal',
             src: ['./public/fonts/the-seasons-light.woff2'],
           },
+          // The Seasons Regular 400 — default body weight
           {
             weight: 400,
             style: 'normal',
             src: ['./public/fonts/the-seasons-regular.woff2'],
           },
+          // The Seasons Bold 700 — strong / emphasis
           {
             weight: 700,
             style: 'normal',
             src: ['./public/fonts/the-seasons-bold.woff2'],
-          },
-        ],
-      },
-    },
-    {
-      provider: fontProviders.local(),
-      name: 'Butler',
-      cssVariable: '--font-butler',
-      fallbacks: ['Georgia', 'Times New Roman', 'serif'],
-      options: {
-        variants: [
-          // Butler Roman 400 — default body weight
-          {
-            weight: 400,
-            style: 'normal',
-            src: ['./public/fonts/butler-regular.woff2'],
-          },
-          // Butler Medium 500 — UI labels / tags / subtle emphasis
-          {
-            weight: 500,
-            style: 'normal',
-            src: ['./public/fonts/butler-medium.woff2'],
-          },
-          // Butler Bold 700 — strong / emphasis
-          {
-            weight: 700,
-            style: 'normal',
-            src: ['./public/fonts/butler-bold.woff2'],
           },
         ],
       },
