@@ -1,0 +1,23 @@
+{
+  "name": "sef-website",
+  "version": "1.0.0",
+  "description": "Saigon Equities Forum — website revamp",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "keywords": [],
+  "author": "Saigon Equities Forum",
+  "license": "ISC",
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^6.0.3",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^6.4.6"
+  }
+}
