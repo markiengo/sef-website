@@ -1,0 +1,521 @@
+---
+// src/pages/publications/index.astro
+// Publications library index — browsable card grid with client-side filter island.
+//
+// MOD-02: data access ONLY via ../../lib/content adapter — no direct collection queries.
+// Progressive enhancement: all cards render without JS; filter island is additive.
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getReports } from '../../lib/content';
+import { slugify } from '../../lib/slugify';
+
+const reports = await getReports();
+
+// Derive all unique sectors for the Sector filter dimension
+const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
+---
+
+<BaseLayout
+  title="Publications | Saigon Equities Forum"
+  description="Research and analysis by SEF analysts across Vietnam's markets."
+>
+  <!-- ─── Library Masthead ─────────────────────────────────────────────── -->
+  <section class="pub-masthead">
+    <div class="pub-masthead__inner">
+      <p class="pub-masthead__eyebrow">SAIGON EQUITIES FORUM</p>
+      <h1 class="pub-masthead__headline">Publications</h1>
+      <p class="pub-masthead__subhead">Research and analysis by SEF analysts across Vietnam's markets.</p>
+      <hr class="pub-masthead__rule" aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- ─── Filter Bar ───────────────────────────────────────────────────── -->
+  <div class="filter-bar" role="search" aria-label="Filter publications">
+    <div class="filter-bar__inner">
+      <div class="filter-group">
+        <span class="filter-group__label">Division</span>
+        {['Macro', 'Equity'].map(val => (
+          <button class="filter-chip" data-dim="division" data-val={val}>{val}</button>
+        ))}
+      </div>
+      <div class="filter-group">
+        <span class="filter-group__label">Type</span>
+        {['Report', 'Note', 'Snapshot', 'Insight'].map(val => (
+          <button class="filter-chip" data-dim="type" data-val={val}>{val}</button>
+        ))}
+      </div>
+      {allSectors.length > 0 && (
+        <div class="filter-group">
+          <span class="filter-group__label">Sector</span>
+          {allSectors.map(val => (
+            <button class="filter-chip" data-dim="sector" data-val={val}>{val}</button>
+          ))}
+        </div>
+      )}
+      <div class="filter-bar__meta">
+        <span id="pub-count" class="filter-count" aria-live="polite">
+          {reports.length === 1 ? '1 publication' : `${reports.length} publications`}
+        </span>
+        <a id="filter-reset" class="filter-reset" href="/publications" style="display:none">Clear all filters</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Card Grid ────────────────────────────────────────────────────── -->
+  <div class="pub-grid">
+    {reports.map(report => (
+      <article
+        class="pub-card"
+        data-division={report.data.division}
+        data-type={report.data.type}
+        data-sector={report.data.sector.join('|')}
+      >
+        <img
+          src={report.data.cover.src}
+          alt={report.data.title}
+          width={report.data.cover.width}
+          height={report.data.cover.height}
+        />
+        <div class="pub-card__chips">
+          <span class="chip chip--division">{report.data.division}</span>
+          <span class="chip chip--type">{report.data.type}</span>
+        </div>
+        <div class="pub-card__body">
+          <h2 class="pub-card__title">
+            <a href={`/publications/${report.id}`}>{report.data.title}</a>
+          </h2>
+          <p class="pub-card__desc">{report.data.description}</p>
+          <div class="pub-card__byline">
+            {report.data.analysts.map((name, i) => (
+              <>
+                {i > 0 && <span class="pub-card__byline-sep">, </span>}
+                <a href={`/team/${slugify(name)}`} onclick="event.stopPropagation()">{name}</a>
+              </>
+            ))}
+            <span class="pub-card__dot" aria-hidden="true">·</span>
+            <span class="pub-card__date">
+              {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' }).format(report.data.publishedAt)}
+            </span>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- ─── Empty State ──────────────────────────────────────────────────── -->
+  <div id="pub-empty" class="pub-empty" style="display:none">
+    <p class="pub-empty__heading">No publications match these filters yet.</p>
+    <p class="pub-empty__body">Try removing a filter, or check back as the library grows.</p>
+    <a href="/publications" class="pub-empty__reset">Clear all filters</a>
+  </div>
+
+  <!-- ─── Filter Island (is:inline — DOMContentLoaded required) ───────── -->
+  <script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+    var active = { division: null, type: null, sector: null };
+    var cards = document.querySelectorAll('.pub-card');
+    var chips = document.querySelectorAll('.filter-chip');
+    var countEl = document.getElementById('pub-count');
+    var emptyEl = document.getElementById('pub-empty');
+    var resetEl = document.getElementById('filter-reset');
+
+    function applyFilters() {
+      var count = 0;
+      cards.forEach(function (card) {
+        var match = Object.entries(active).every(function (entry) {
+          var dim = entry[0], val = entry[1];
+          if (!val) return true;
+          if (dim === 'sector') return card.dataset.sector.split('|').includes(val);
+          return card.dataset[dim] === val;
+        });
+        card.style.display = match ? '' : 'none';
+        if (match) count++;
+      });
+      var hasActive = Object.values(active).some(Boolean);
+      if (countEl) countEl.textContent = count === 1 ? '1 publication' : count + ' publications';
+      if (emptyEl) emptyEl.style.display = count === 0 ? '' : 'none';
+      if (resetEl) resetEl.style.display = hasActive ? '' : 'none';
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var dim = chip.dataset.dim;
+        var val = chip.dataset.val;
+        if (active[dim] === val) {
+          active[dim] = null;
+          chip.removeAttribute('data-active');
+        } else {
+          // Deactivate all chips in the same dimension before activating this one
+          chips.forEach(function (c) {
+            if (c.dataset.dim === dim) c.removeAttribute('data-active');
+          });
+          active[dim] = val;
+          chip.setAttribute('data-active', '');
+        }
+        applyFilters();
+      });
+    });
+  });
+  </script>
+</BaseLayout>
+
+<style>
+  /* ── Masthead ────────────────────────────────────────────────────────── */
+  .pub-masthead {
+    background: var(--color-surface);
+    background-image: radial-gradient(ellipse 80% 120% at 60% 50%, rgba(0, 132, 93, 0.06) 0%, transparent 70%);
+    height: clamp(180px, 25vw, 280px);
+    display: flex;
+    align-items: center;
+  }
+
+  .pub-masthead__inner {
+    max-width: 1280px;
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    padding-top: var(--space-4xl);
+  }
+
+  .pub-masthead__eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .pub-masthead__headline {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    color: var(--color-ink);
+    line-height: 1.1;
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .pub-masthead__subhead {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .pub-masthead__rule {
+    border: none;
+    border-top: 1px solid var(--color-gold);
+    opacity: 0.4;
+    margin: var(--space-lg) 0 0 0;
+    width: 60px;
+  }
+
+  /* ── Filter Bar ──────────────────────────────────────────────────────── */
+  .filter-bar {
+    position: sticky;
+    top: 64px; /* height of the sticky site header */
+    z-index: 10;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-surface-3);
+    padding: var(--space-md) 0;
+  }
+
+  .filter-bar__inner {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .filter-group__label {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .filter-chip {
+    height: 36px;
+    min-height: 44px; /* WCAG 2.5.5 touch target */
+    padding: 0 var(--space-md);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    background: transparent;
+    border: 1px solid var(--color-surface-3);
+    border-radius: 2px;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-standard),
+                color var(--duration-fast) var(--ease-standard),
+                background var(--duration-fast) var(--ease-standard);
+  }
+
+  .filter-chip:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .filter-chip[data-active] {
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+    color: var(--color-surface); /* cream on emerald — 4.7:1 AA for large interactive element */
+  }
+
+  .filter-chip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .filter-bar__meta {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .filter-count {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+
+  .filter-reset {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    color: var(--color-accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .filter-reset:hover {
+    text-decoration: underline;
+  }
+
+  /* Mobile filter: horizontal scroll */
+  @media (max-width: 767px) {
+    .filter-bar__inner {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-inline: var(--space-md);
+      gap: var(--space-sm);
+    }
+
+    .filter-bar__inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-bar__meta {
+      margin-left: 0;
+    }
+  }
+
+  /* ── Card Grid ───────────────────────────────────────────────────────── */
+  .pub-grid {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: var(--space-xl) var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+
+  @media (max-width: 1023px) {
+    .pub-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .pub-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      padding-inline: var(--space-md);
+    }
+  }
+
+  /* ── Publication Card ────────────────────────────────────────────────── */
+  .pub-card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-surface-3);
+    border-radius: 8px; /* D-06 explicit exception — owner requested glossy rounded cards */
+    box-shadow: 0 2px 8px -2px rgba(29, 57, 55, 0.10), 0 1px 3px -1px rgba(29, 57, 55, 0.08);
+    transition: transform var(--duration-standard) var(--ease-enter),
+                box-shadow var(--duration-standard) var(--ease-enter);
+    overflow: hidden;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pub-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px -4px rgba(29, 57, 55, 0.18), 0 4px 8px -2px rgba(29, 57, 55, 0.12);
+    }
+  }
+
+  .pub-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .pub-card__chips {
+    padding: var(--space-sm) var(--space-md) 0;
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .pub-card__body {
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+  }
+
+  .pub-card__title {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.5vw + 0.5rem, 1.375rem);
+    font-weight: 400;
+    color: var(--color-ink);
+    line-height: 1.25;
+    margin: 0 0 var(--space-sm) 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pub-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pub-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .pub-card__desc {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    color: var(--color-ink-muted);
+    line-height: 1.5;
+    margin: 0 0 var(--space-sm) 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: none; /* override global p { max-width: 65ch } */
+  }
+
+  .pub-card__byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    color: var(--color-ink-muted);
+  }
+
+  .pub-card__byline a {
+    color: var(--color-accent); /* 8.0:1 AAA — safe on surface-2 */
+    text-decoration: none;
+  }
+
+  .pub-card__byline a:hover {
+    text-decoration: underline;
+  }
+
+  .pub-card__byline-sep {
+    color: var(--color-ink-muted);
+  }
+
+  .pub-card__dot {
+    color: var(--color-surface-3);
+    margin-inline: var(--space-xs);
+  }
+
+  .pub-card__date {
+    color: var(--color-ink-muted);
+  }
+
+  /* ── Chip Variants ───────────────────────────────────────────────────── */
+  .chip {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    padding: 2px var(--space-sm);
+    display: inline-block;
+  }
+
+  .chip--division {
+    color: var(--color-accent); /* 8.0:1 AAA */
+    border: 1px solid var(--color-accent);
+    background: transparent;
+  }
+
+  .chip--type {
+    color: var(--color-ink-muted);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-surface-3);
+  }
+
+  /* ── Empty State ─────────────────────────────────────────────────────── */
+  .pub-empty {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: var(--space-4xl) var(--space-xl);
+    text-align: center;
+  }
+
+  .pub-empty__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    color: var(--color-ink);
+    margin: 0 0 var(--space-md) 0;
+    max-width: none;
+  }
+
+  .pub-empty__body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-ink-muted);
+    max-width: 40ch;
+    margin: 0 auto var(--space-xl);
+  }
+
+  .pub-empty__reset {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-accent);
+  }
+
+  .pub-empty__reset:hover {
+    text-decoration: underline;
+  }
+</style>
