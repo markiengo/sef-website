@@ -45,7 +45,7 @@ One word governs the entire identity: **ego**. SEF is finance, luxury, and quiet
 - [ ] Profiles expose **only** privacy-safe fields: name, role, university, course, division, Instagram — never email or phone
 
 **System / Foundation**
-- [ ] Themeable design system built on the SEF identity (green `#00845D`, gold `#C89D29`, dark grey `#3E3E3D`; Cinzel display, Inter body) supporting both a **dark** and a **light** treatment
+- [ ] Design system built on the SEF identity (green `#00845D`, gold `#C89D29`, dark grey `#3E3E3D`; Cinzel display, Inter body) — a single **light** treatment (warm cream/emerald/gold editorial canvas). *(Revised 2026-06-13: dark treatment dropped from v1 — owner chose light. Tokens stay swap-friendly for a possible future second treatment.)*
 - [ ] Reports & insights authored as MDX/markdown content collections (v1 publishing model)
 - [ ] Deployed to Vercel on the existing custom domain
 
@@ -103,7 +103,7 @@ One word governs the entire identity: **ego**. SEF is finance, luxury, and quiet
 | Full analyst profile pages with report bylines | Strongest recruitment hook ("get published like them"); ties team↔publications | — Pending |
 | Publications taxonomy: Division → Type → Sector | Scales with output; mirrors real deliverable structure | — Pending |
 | Separate on-site News & Insights stream | Keeps short-form content on-site (SEO + recruitment) vs. heavy reports | — Pending |
-| Dark vs. light visual base decided at design (themeable build) | Owner wants to see both mocked before committing | — Pending |
+| Visual base = single **light** treatment (warm cream/taupe + emerald + gold, from palette.png + style_guide.md), never generic white. Dark dropped from v1. | Owner reviewed a live palette preview and chose light; CSS-variable tokens keep a future second treatment cheap | ✓ Decided 2026-06-13 (Phase 1 discuss) |
 | English-only v1 | Working language; audience studies/aspires to study abroad | — Pending |
 
 ## Evolution
