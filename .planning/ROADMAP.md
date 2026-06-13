@@ -13,7 +13,7 @@ From blank Astro project to a quietly-elite, recruitment-ready marketing site in
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation** - Astro scaffold, CSS-variable design system (single light treatment), content model, data adapter, and Vercel deploy pipeline
-- [ ] **Phase 2: Publications Library** - Browsable, filterable publications library with per-report web summary pages, PDF download, bylines, and SEO text
+- [x] **Phase 2: Publications Library** - Browsable, filterable publications library with per-report web summary pages, PDF download, bylines, and SEO text (completed 2026-06-13)
 - [ ] **Phase 3: Landing Page** - Cinematic, recruitment-focused landing page with hero, Join CTA, WSO partnership, featured reports, and university logos
 - [ ] **Phase 4: Team & Analyst Profiles** - Team directory and full individual analyst profile pages with build-time report back-references and privacy enforcement
 - [ ] **Phase 5: News & Insights** - Short-form News & Insights stream with index view and individual post pages, visually distinct from reports
@@ -55,7 +55,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   - [x] 02-02-PLAN.md — Publications library index at /publications: masthead, cover-image card grid, instant client-side filter island (PUB-01/PUB-02)
   - [x] 02-03-PLAN.md — Route relocation /reports/[id] → /publications/[id]: byline links, breadcrumb, redirect in astro.config.mjs (PUB-03/04/05/06)
   - [x] 02-04-PLAN.md — Team profile stubs at /team/[slug]: derived from report frontmatter, never dead-links, privacy-safe (PUB-05)
-  - [ ] 02-05-PLAN.md — Cover generation + 5 seeded reports from context/Deliverables/: Macro + Equity divisions, multiple sectors (PUB-01/02/03/04)
+  - [x] 02-05-PLAN.md — Cover generation + 5 seeded reports from context/Deliverables/: Macro + Equity divisions, multiple sectors (PUB-01/02/03/04)
 **UI hint**: yes
 
 ### Phase 3: Landing Page
@@ -117,7 +117,7 @@ Phases execute in dependency order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 5 can
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete |  |
-| 2. Publications Library | 4/5 | In Progress|  |
+| 2. Publications Library | 5/5 | Complete   | 2026-06-13 |
 | 3. Landing Page | 0/? | Not started | - |
 | 4. Team & Analyst Profiles | 0/? | Not started | - |
 | 5. News & Insights | 0/? | Not started | - |
