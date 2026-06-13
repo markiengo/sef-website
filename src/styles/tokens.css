@@ -2,7 +2,7 @@
  * Single LIGHT treatment only (D-01 — dark treatment dropped from v1).
  * No [data-theme] selector. No dark token values.
  * All brand hex values live here ONLY — never hardcoded in components (D-05/BRD-02).
- * Font CSS variables (--font-cinzel, --font-the-seasons) are injected by the Astro Fonts API
+ * Font CSS variables (--font-cinzel, --font-kollektif) are injected by the Astro Fonts API
  * at build time; --font-display and --font-body alias them for component use.
  */
 
@@ -36,11 +36,11 @@
   --color-destructive: #B02020; /* destructive actions only — none in Phase 1 */
 
   /* ─── Typography ─── */
-  /* --font-cinzel and --font-the-seasons are injected by the Astro Fonts API at build time.
+  /* --font-cinzel and --font-kollektif are injected by the Astro Fonts API at build time.
      --font-display and --font-body alias them for semantic component use.
-     Type scheme: Cinzel → headings/display/logo; The Seasons → body + everything else. */
-  --font-display: var(--font-cinzel);       /* Cinzel — all headings, display, logo */
-  --font-body:    var(--font-the-seasons);  /* The Seasons — body + everything else */
+     Type scheme: Cinzel → headings/display/logo; Kollektif → body + everything else. */
+  --font-display: var(--font-cinzel);    /* Cinzel — all headings, display, logo */
+  --font-body:    var(--font-kollektif); /* Kollektif — body + everything else */
 
   /* Type scale — fluid clamp values (UI-SPEC §Typography) */
   --text-display: clamp(3rem, 7vw + 1rem, 5rem); /* 48px → 80px */
