@@ -23,7 +23,7 @@ const VIETNAMESE_RANGE = [
 ];
 
 export default defineConfig({
-  site: 'https://sef-website.vercel.app',
+  site: 'https://sef-website-chi.vercel.app',
   // output: 'static' is the default — no adapter required for Vercel static deploy (PLT-01)
   integrations: [mdx(), sitemap()],
 

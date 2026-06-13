@@ -28,10 +28,10 @@ Vercel runs `astro build` on each push to the connected branch, then serves the 
 
 ## Live URL
 
-> **Placeholder — to be filled in after Task 2 (Vercel connect checkpoint)**
->
-> `site: https://sef-website.vercel.app` in `astro.config.mjs` will be updated to the real
-> assigned subdomain once Vercel completes the first build and the URL is confirmed.
+**https://sef-website-chi.vercel.app/**
+
+`site:` in `astro.config.mjs` is set to this URL. `@astrojs/sitemap` uses this value to emit
+correct absolute URLs in `dist/sitemap-index.xml` and `dist/sitemap-0.xml`.
 
 ## Deferred: custom domain cutover
 
