@@ -1,0 +1,89 @@
+---
+// src/pages/team/[slug].astro
+// Team profile stub pages — one route per unique analyst across all reports.
+//
+// MOD-02: imports ONLY from ../../lib/content — never from astro:content directly.
+// slugify() imported from shared lib — MUST match the formula used in byline links
+// (Pitfall 6: slug divergence breaks navigation if formula diverges between files).
+//
+// Privacy (D-10 / T-02-04-PII): Only the analyst's display name is rendered.
+// No email, phone, university, Instagram, or role appears on this page.
+// Phase 4 will extend this route with full profiles from a privacy-safe data source.
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getReports } from '../../lib/content';
+import { slugify } from '../../lib/slugify';
+
+export async function getStaticPaths() {
+  const reports = await getReports();
+  const nameMap = new Map<string, string>(); // slug → display name
+  reports.forEach((r) =>
+    r.data.analysts.forEach((name) => {
+      // Map.set overwrites on duplicate slug — correct behaviour:
+      // same analyst in multiple reports produces one route with one name.
+      nameMap.set(slugify(name), name);
+    })
+  );
+  return Array.from(nameMap.entries()).map(([slug, name]) => ({
+    params: { slug },
+    props: { name },
+  }));
+}
+
+const { name } = Astro.props;
+const { slug } = Astro.params; // available for Phase 4 extension; unused in stub template
+---
+
+<BaseLayout
+  title={`${name} | Saigon Equities Forum`}
+  description={`${name} — SEF analyst profile.`}
+>
+  <div class="team-stub">
+    <a href="/publications" class="team-stub__back">← Publications</a>
+    <h1 class="team-stub__name">{name}</h1>
+    <hr class="team-stub__rule" aria-hidden="true" />
+    <p class="team-stub__message">Full profile coming soon.</p>
+  </div>
+</BaseLayout>
+
+<style>
+  .team-stub {
+    max-width: 640px;
+    margin-inline: auto;
+    padding: var(--space-4xl) var(--space-xl);
+  }
+
+  .team-stub__back {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    color: var(--color-accent);
+    text-decoration: none;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .team-stub__back:hover {
+    color: var(--color-ink);
+  }
+
+  .team-stub__name {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+
+  .team-stub__rule {
+    border: none;
+    border-top: 1px solid var(--color-gold);
+    opacity: 0.4;
+    margin: var(--space-lg) 0;
+  }
+
+  .team-stub__message {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-ink-muted);
+    max-width: none;
+  }
+</style>
