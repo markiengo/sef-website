@@ -1,0 +1,136 @@
+/* src/styles/global.css
+ * Global reset + base element styles for the SEF design system.
+ * Enforces the WCAG AA role split (D-04/BRD-03):
+ *   links → var(--color-accent) #195042 (8.0:1 AAA)
+ *   brand green #00845D → fills/large text ONLY (never a, p, or body text)
+ *   gold #C89D29 → decorative only, never text
+ * No literal hex values here — all via var() tokens (D-05/BRD-02).
+ */
+
+/* ─── Reset ─────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Root ────────────────────────────────────────────────────────────────  */
+
+html {
+  color-scheme: light;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ─── Body defaults ──────────────────────────────────────────────────────── */
+/* Inter Light (300) as body default per style guide (D-07) */
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 300;  /* Inter Light — D-07: default body weight */
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Headings — Inter Light 300 per style guide ───────────────────────── */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-body);
+  font-weight: 300;  /* Inter Light — D-07: headings use Light, not semibold */
+  line-height: 1.25;
+}
+
+/* ─── Display / Cinzel role ─────────────────────────────────────────────── */
+/* Apply to hero headlines, section identity moments only.
+   Cinzel is display/logo role ONLY per style guide (D-07). */
+
+.display,
+[data-display] {
+  font-family: var(--font-display);
+  font-weight: 400;  /* Cinzel Regular */
+  line-height: 1.1;
+}
+
+/* ─── WCAG AA Role Split (D-04, BRD-03) — correctness-critical ────────── */
+/* Links MUST use --color-accent (#195042, 8.0:1) — never --color-brand or --color-gold.
+   --color-brand (~4.1:1) fails WCAG AA for body/link text.
+   --color-gold (~2.2:1) fails WCAG for all text use. */
+
+a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-ink);
+}
+
+/* ─── Focus visible — keyboard navigation accessibility ─────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ─── Interactive minimum touch target (WCAG 2.1 SC 2.5.5) ──────────────── */
+/* Buttons and nav items must meet 44px minimum height */
+
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  min-height: 44px;
+  cursor: pointer;
+}
+
+/* ─── Body copy width constraint ─────────────────────────────────────────── */
+
+p {
+  max-width: 65ch;
+}
+
+/* ─── Media ──────────────────────────────────────────────────────────────── */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ─── Reduced motion gate (UI-SPEC §Motion Primitives) ──────────────────── */
+/* Phase 6 enforces motion via the duration/ease tokens.
+   This base gate ensures any transition/animation is suppressed
+   for users who prefer reduced motion. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

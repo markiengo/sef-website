@@ -1,8 +1,9 @@
 /* src/styles/tokens.css
  * Single LIGHT treatment only (D-01 — dark treatment dropped from v1).
  * No [data-theme] selector. No dark token values.
- * Plan 02 completes the full token table (global.css, @font-face, Astro Fonts API).
  * All brand hex values live here ONLY — never hardcoded in components (D-05/BRD-02).
+ * Font CSS variables (--font-cinzel, --font-inter) are injected by the Astro Fonts API
+ * at build time; --font-display and --font-body alias them for component use.
  */
 
 :root {
@@ -18,11 +19,16 @@
   --color-ink-muted: #54675E; /* metadata, captions — 5.2:1 AA (D-03) */
 
   /* Interactive / accent — hard role split (D-04, BRD-03) */
+  /* WCAG ROLE SPLIT — correctness-critical:
+     --color-accent: links + small interactive text ONLY (8.0:1 AAA — always safe)
+     --color-brand: button fills + large text (≥24px) ONLY — ~4.1:1, fails AA as body text */
   --color-accent:    #195042; /* links + small interactive text ONLY — 8.0:1 AAA */
-  --color-brand:     #00845D; /* button fills + large text ONLY — fails AA as body text */
+  --color-brand:     #00845D; /* button fills + large text ONLY — FAILS AA as body/link text */
 
-  /* Decorative — never use as text (D-04) */
-  --color-gold:      #C89D29; /* rule lines, marks, badges — 2.2:1, decorative ONLY */
+  /* Decorative — NEVER use as text (D-04):
+     --color-gold: ~2.2:1 on surface — hairline rules, marks, badges only
+     --color-olive: alternate decorative accent, never for text */
+  --color-gold:      #C89D29; /* rule lines, marks, badges — 2.2:1, DECORATIVE ONLY */
   --color-olive:     #91853A; /* alternate decorative accent */
   --color-grey:      #3E3E3D; /* graph / neutral captions (style-guide dark grey) */
 
@@ -30,8 +36,10 @@
   --color-destructive: #B02020; /* destructive actions only — none in Phase 1 */
 
   /* ─── Typography ─── */
-  --font-display: 'Cinzel', serif;               /* display / logo role ONLY (D-07) */
-  --font-body:    'Inter', system-ui, sans-serif; /* all headings + body (D-07) */
+  /* --font-cinzel and --font-inter are injected by the Astro Fonts API at build time.
+     --font-display and --font-body alias them for semantic component use (D-07). */
+  --font-display: var(--font-cinzel);  /* display / logo role ONLY (D-07) */
+  --font-body:    var(--font-inter);   /* all headings + body (D-07) */
 
   /* Type scale — fluid clamp values (UI-SPEC §Typography) */
   --text-display: clamp(3rem, 7vw + 1rem, 5rem); /* 48px → 80px */

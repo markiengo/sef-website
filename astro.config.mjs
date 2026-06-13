@@ -4,6 +4,8 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 // Vietnamese unicode range (U+1EA0-1EF9 core + combining marks)
+// Must be a tuple (at least one element) to satisfy the Astro Fonts API type.
+/** @type {[string, ...string[]]} */
 const VIETNAMESE_RANGE = [
   'U+0102-0103',
   'U+0110-0111',
