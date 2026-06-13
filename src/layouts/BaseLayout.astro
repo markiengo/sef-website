@@ -2,7 +2,7 @@
 // src/layouts/BaseLayout.astro
 // Root layout for all pages.
 // Imports the design-system token layer and global base styles.
-// Astro Fonts API: Font component emits preload + @font-face for Cinzel and The Seasons.
+// Astro Fonts API: Font component emits preload + @font-face for Cinzel and Kollektif.
 
 import '../styles/tokens.css';
 import '../styles/global.css';
@@ -27,9 +27,227 @@ const {
     <title>{title}</title>
     <!-- Astro Fonts API: emits preload links + @font-face with font-display:swap (BRD-04) -->
     <Font cssVariable="--font-cinzel" preload />
-    <Font cssVariable="--font-the-seasons" preload />
+    <Font cssVariable="--font-kollektif" preload />
   </head>
   <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="/" class="site-logo" aria-label="Saigon Equities Forum home">SEF</a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="/publications">Publications</a>
+          <a href="/team">Team</a>
+          <a href="#insights" aria-label="News & Insights (coming soon)">Insights</a>
+          <a
+            href="https://forms.gle/placeholder"
+            class="site-nav__join"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Join</a>
+        </nav>
+        <button
+          class="site-nav__hamburger"
+          aria-label="Open navigation"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+        >
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <nav id="mobile-nav" class="site-nav--mobile" hidden aria-label="Mobile navigation">
+        <a href="/publications" class="site-nav--mobile__link">Publications</a>
+        <a href="/team" class="site-nav--mobile__link">Team</a>
+        <a
+          href="#insights"
+          class="site-nav--mobile__link"
+          aria-label="News & Insights (coming soon)"
+        >Insights</a>
+        <a
+          href="https://forms.gle/placeholder"
+          class="site-nav--mobile__link site-nav--mobile__join"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Join SEF</a>
+      </nav>
+    </header>
+
     <slot />
+
+    <footer class="site-footer">
+      <p>&copy; 2026 Saigon Equities Forum</p>
+    </footer>
+
+    <script is:inline>
+      (function () {
+        var btn = document.querySelector('.site-nav__hamburger');
+        var nav = document.getElementById('mobile-nav');
+        if (!btn || !nav) return;
+        btn.addEventListener('click', function () {
+          var expanded = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+          btn.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
+          if (expanded) {
+            nav.setAttribute('hidden', '');
+          } else {
+            nav.removeAttribute('hidden');
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
+
+<style>
+  /* ─── Site Header ─── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-surface-3);
+  }
+
+  .site-header__inner {
+    height: 64px;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .site-logo {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--color-ink);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .site-logo:hover {
+    color: var(--color-ink);
+  }
+
+  /* Desktop nav */
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+
+  .site-nav a {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .site-nav a:hover {
+    color: var(--color-ink);
+  }
+
+  .site-nav__join {
+    border: 1px solid var(--color-accent);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 2px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-nav__join:hover {
+    background: var(--color-accent);
+    color: var(--color-surface) !important;
+  }
+
+  /* Hamburger button */
+  .site-nav__hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-xs);
+    color: var(--color-ink);
+    min-height: 44px;
+    min-width: 44px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Mobile nav panel */
+  .site-nav--mobile {
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-surface-3);
+  }
+
+  .site-nav--mobile__link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-xl);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-surface-3);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .site-nav--mobile__link:last-child {
+    border-bottom: none;
+  }
+
+  .site-nav--mobile__link:hover {
+    color: var(--color-ink);
+  }
+
+  .site-nav--mobile__join {
+    font-weight: 400;
+  }
+
+  /* ─── Responsive breakpoints ─── */
+  @media (max-width: 767px) {
+    .site-nav {
+      display: none;
+    }
+
+    .site-nav__hamburger {
+      display: inline-flex;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .site-nav__hamburger {
+      display: none;
+    }
+
+    #mobile-nav {
+      display: none !important;
+    }
+  }
+
+  /* ─── Site Footer ─── */
+  .site-footer {
+    border-top: 1px solid var(--color-surface-3);
+    padding: var(--space-xl);
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    color: var(--color-ink-muted);
+  }
+
+  .site-footer p {
+    margin: 0;
+    max-width: none;
+  }
+</style>
