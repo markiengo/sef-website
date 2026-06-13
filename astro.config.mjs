@@ -6,6 +6,10 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://sef-website-chi.vercel.app',
   // output: 'static' is the default — no adapter required for Vercel static deploy (PLT-01)
+  redirects: {
+    // D-12: old /reports/[id] URLs redirect to /publications/[id] — no broken links
+    '/reports/[id]': '/publications/[id]',
+  },
   integrations: [mdx(), sitemap()],
 
   // Astro 6 built-in Fonts API — top-level `fonts:` key.
@@ -13,10 +17,11 @@ export default defineConfig({
   // font-display: swap is the API default. Preload links emitted by <Font> in BaseLayout.
   //
   // Type scheme: Cinzel (display serif) → all headings/display/logo.
-  //              The Seasons (serif) → body + everything else.
-  // Vietnamese note: neither font ships the precomposed VN tone-mark glyphs
-  // (U+1EA0–1EF9) or ₫ (U+20AB). `fallbacks` routes those glyphs per-character
-  // to a system serif (Georgia/Times) so VN names render without tofu boxes.
+  //              Kollektif (geometric sans) → body + everything else.
+  // Vietnamese note: neither font ships precomposed VN tone-mark glyphs
+  // (U+1EA0–1EF9) or ₫ (U+20AB). Per-font `fallbacks` route those glyphs per
+  // character — Cinzel → system serif, Kollektif → system sans (Segoe UI/Arial,
+  // full VN coverage) — so VN names render without tofu and match each role.
   fonts: [
     {
       provider: fontProviders.local(),
@@ -40,28 +45,34 @@ export default defineConfig({
     },
     {
       provider: fontProviders.local(),
-      name: 'The Seasons',
-      cssVariable: '--font-the-seasons',
-      fallbacks: ['Georgia', 'Times New Roman', 'serif'],
+      name: 'Kollektif',
+      cssVariable: '--font-kollektif',
+      fallbacks: ['Segoe UI', 'Arial', 'Helvetica', 'sans-serif'],
       options: {
         variants: [
-          // The Seasons Light 300 — optional lighter body / large lead text
-          {
-            weight: 300,
-            style: 'normal',
-            src: ['./public/fonts/the-seasons-light.woff2'],
-          },
-          // The Seasons Regular 400 — default body weight
+          // Kollektif Regular 400 — default body weight
           {
             weight: 400,
             style: 'normal',
-            src: ['./public/fonts/the-seasons-regular.woff2'],
+            src: ['./public/fonts/kollektif-regular.woff2'],
           },
-          // The Seasons Bold 700 — strong / emphasis
+          // Kollektif Bold 700 — strong / emphasis / CTA
           {
             weight: 700,
             style: 'normal',
-            src: ['./public/fonts/the-seasons-bold.woff2'],
+            src: ['./public/fonts/kollektif-bold.woff2'],
+          },
+          // Kollektif Italic 400 — emphasis (real italic, not synthetic)
+          {
+            weight: 400,
+            style: 'italic',
+            src: ['./public/fonts/kollektif-italic.woff2'],
+          },
+          // Kollektif Bold Italic 700
+          {
+            weight: 700,
+            style: 'italic',
+            src: ['./public/fonts/kollektif-bolditalic.woff2'],
           },
         ],
       },
