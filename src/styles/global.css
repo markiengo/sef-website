@@ -30,20 +30,21 @@ html {
 }
 
 /* ─── Body defaults ──────────────────────────────────────────────────────── */
-/* Inter Light (300) as body default per style guide (D-07) */
+/* Butler Roman (400) as body default. Butler is a high-contrast text serif —
+   it reads at 400, not Light; generous line-height keeps dense copy comfortable. */
 
 body {
   background-color: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font-body);
-  font-weight: 300;  /* Inter Light — D-07: default body weight */
+  font-weight: 400;  /* Butler Roman — default body weight */
   font-size: var(--text-body);
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Headings — Inter Light 300 per style guide ───────────────────────── */
+/* ─── Headings — The Seasons (display serif) ───────────────────────────── */
 
 h1,
 h2,
@@ -51,19 +52,19 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-body);
-  font-weight: 300;  /* Inter Light — D-07: headings use Light, not semibold */
-  line-height: 1.25;
+  font-family: var(--font-display);  /* The Seasons — all headings */
+  font-weight: 400;
+  line-height: 1.2;
 }
 
-/* ─── Display / Cinzel role ─────────────────────────────────────────────── */
-/* Apply to hero headlines, section identity moments only.
-   Cinzel is display/logo role ONLY per style guide (D-07). */
+/* ─── Display role ──────────────────────────────────────────────────────── */
+/* Hero headlines, section identity moments, the SEF wordmark.
+   Same family as headings (The Seasons); tighter leading for large sizes. */
 
 .display,
 [data-display] {
   font-family: var(--font-display);
-  font-weight: 400;  /* Cinzel Regular */
+  font-weight: 400;  /* The Seasons Regular */
   line-height: 1.1;
 }
 

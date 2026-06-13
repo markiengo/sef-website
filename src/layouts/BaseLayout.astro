@@ -2,7 +2,7 @@
 // src/layouts/BaseLayout.astro
 // Root layout for all pages.
 // Imports the design-system token layer and global base styles.
-// Astro Fonts API: Font component emits preload + @font-face for Cinzel and Inter.
+// Astro Fonts API: Font component emits preload + @font-face for The Seasons and Butler.
 
 import '../styles/tokens.css';
 import '../styles/global.css';
@@ -26,8 +26,8 @@ const {
     <meta name="description" content={description} />
     <title>{title}</title>
     <!-- Astro Fonts API: emits preload links + @font-face with font-display:swap (BRD-04) -->
-    <Font cssVariable="--font-cinzel" preload />
-    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-the-seasons" preload />
+    <Font cssVariable="--font-butler" preload />
   </head>
   <body>
     <slot />
