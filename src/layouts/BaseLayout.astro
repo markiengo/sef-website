@@ -1,0 +1,40 @@
+---
+// src/layouts/BaseLayout.astro
+// Root layout for all pages.
+// Imports the token layer (tokens.css) so every page inherits the SEF design system.
+// Plan 02 adds: global.css reset, Astro Fonts API (<Font> components), full type defaults.
+
+import '../styles/tokens.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Vietnam-focused financial research by Saigon Equities Forum.',
+} = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style>
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    margin: 0;
+    padding: 0;
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+// src/pages/index.astro
+// Proof-of-concept page — Walking Skeleton end-to-end slice.
+// Renders the SEF identity on the warm-ivory canvas using only CSS-variable tokens.
+// No brand hex hardcoded here (D-05/BRD-02). No CTA (Copywriting Contract: Phase 1 has none).
+// Phase 3 replaces this with the real cinematic landing page.
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Saigon Equities Forum">
+  <main>
+    <h1 data-display>Saigon Equities Forum</h1>
+    <p class="subhead">Vietnam-focused financial research. Coming soon.</p>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding: var(--space-5xl) var(--space-xl);
+    max-width: 1280px;
+    margin-inline: auto;
+  }
+
+  h1[data-display] {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    color: var(--color-ink);
+    line-height: 1.1;
+    margin: 0 0 var(--space-lg) 0;
+  }
+
+  .subhead {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-ink-muted);
+    max-width: 65ch;
+    margin: 0;
+  }
+</style>

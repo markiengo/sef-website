@@ -1,0 +1,63 @@
+/* src/styles/tokens.css
+ * Single LIGHT treatment only (D-01 — dark treatment dropped from v1).
+ * No [data-theme] selector. No dark token values.
+ * Plan 02 completes the full token table (global.css, @font-face, Astro Fonts API).
+ * All brand hex values live here ONLY — never hardcoded in components (D-05/BRD-02).
+ */
+
+:root {
+  /* ─── Color — light treatment (D-03, per 01-CONTEXT.md + 01-UI-SPEC.md) ─── */
+
+  /* Surfaces (60 / 30 / 10 split) */
+  --color-surface:   #F4EEE5; /* dominant page background — warm ivory (D-03) */
+  --color-surface-2: #E7DFD3; /* cards, nav, elevated containers */
+  --color-surface-3: #D6CABC; /* borders, dividers, hairline rules */
+
+  /* Ink (text / headings) */
+  --color-ink:       #1D3937; /* primary text / headings — 9.9:1 AAA (D-03) */
+  --color-ink-muted: #54675E; /* metadata, captions — 5.2:1 AA (D-03) */
+
+  /* Interactive / accent — hard role split (D-04, BRD-03) */
+  --color-accent:    #195042; /* links + small interactive text ONLY — 8.0:1 AAA */
+  --color-brand:     #00845D; /* button fills + large text ONLY — fails AA as body text */
+
+  /* Decorative — never use as text (D-04) */
+  --color-gold:      #C89D29; /* rule lines, marks, badges — 2.2:1, decorative ONLY */
+  --color-olive:     #91853A; /* alternate decorative accent */
+  --color-grey:      #3E3E3D; /* graph / neutral captions (style-guide dark grey) */
+
+  /* Semantic */
+  --color-destructive: #B02020; /* destructive actions only — none in Phase 1 */
+
+  /* ─── Typography ─── */
+  --font-display: 'Cinzel', serif;               /* display / logo role ONLY (D-07) */
+  --font-body:    'Inter', system-ui, sans-serif; /* all headings + body (D-07) */
+
+  /* Type scale — fluid clamp values (UI-SPEC §Typography) */
+  --text-display: clamp(3rem, 7vw + 1rem, 5rem); /* 48px → 80px */
+  --text-heading: clamp(1.5rem, 2vw + 1rem, 2rem); /* 24px → 32px */
+  --text-body:    1rem;    /* 16px */
+  --text-label:   0.8125rem; /* 13px */
+
+  /* ─── Spacing — 8pt scale (UI-SPEC §Spacing) ─── */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  --space-5xl: 128px;
+
+  /* ─── Motion — defined now, applied in Phase 6 (UI-SPEC §Motion) ─── */
+  --ease-standard:  cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter:     cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --duration-fast:      120ms;
+  --duration-standard:  250ms;
+  --duration-slow:      500ms;
+  --duration-cinematic: 900ms;
+}
