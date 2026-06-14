@@ -17,7 +17,7 @@
 // rgba derived from brand hex is the sanctioned exception, matching the masthead).
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { JOIN_FORM_URL, JD_URL, WSO_BADGE_SRC } from '../lib/site';
+import { JOIN_FORM_URL, JD_URL, WSO_BADGE_SRC, UNIVERSITIES } from '../lib/site';
 import { getReports } from '../lib/content'; // MOD-02 seam — the only report-data adapter; pages never read the collection directly.
 
 // Featured flagship trio (LND-04). Featured-flagged first, then top up with the
@@ -35,6 +35,12 @@ const fmtDate = (d: Date) =>
   title="Saigon Equities Forum — Vietnam's markets, read by its sharpest students"
   description="A student-led forum for serious equity and macro research on Vietnam."
 >
+  {/* No-JS / reduced-motion guard: only when this runs do the below-the-fold
+      .reveal sections adopt their hidden initial state (gated behind `.js`), so
+      non-JS visitors never see a blank page. Reveal sections are below the fold,
+      so adding the class here (top of body) causes no visible flash. */}
+  <script is:inline>document.documentElement.classList.add('js');</script>
+
   <section class="hero">
     {/* Decorative, code-driven animated brand-tone gradient/mesh + static grain.
         aria-hidden — all conveyed meaning lives in the real DOM text below. */}
@@ -78,7 +84,7 @@ const fmtDate = (d: Date) =>
        Proof, not a claim. Real horizontal badge, framed by a gold hairline, on a
        slightly deeper surface so it reads as a distinct credential band. The ONE
        locked context line states only the two true perks. */}
-  <section class="wso">
+  <section class="wso reveal">
     <div class="wso__inner">
       <hr class="rule" aria-hidden="true" />
       <p class="kicker">OUR PARTNER</p>
@@ -100,7 +106,7 @@ const fmtDate = (d: Date) =>
        Quietly elite: the elite signal is SHOWN, not shouted. Editorial 2-up,
        negative space + a single hairline — no card-cliché, no kicker here (the
        page's two section labels are spent on WSO + featured). */}
-  <section class="prestige">
+  <section class="prestige reveal">
     <div class="prestige__inner">
       <div class="prestige__lede">
         <h2 class="prestige__heading">Serious research, held to a professional standard.</h2>
@@ -126,7 +132,7 @@ const fmtDate = (d: Date) =>
   {/* ─── Featured Flagship Reports (LND-04) ────────────────────────────────
        The work speaks first. Phase-2 .pub-row language, read through the
        getReports() adapter, each row linking into the live publications library. */}
-  <section class="featured">
+  <section class="featured reveal">
     <div class="featured__head">
       <p class="kicker">SELECTED RESEARCH</p>
       <h2 class="featured__heading">The work speaks first.</h2>
@@ -171,6 +177,97 @@ const fmtDate = (d: Date) =>
       </a>
     </div>
   </section>
+
+  {/* ─── University Logos Marquee (LND-05) ─────────────────────────────────
+       Social proof. A slow, seamless grayscale loop driven entirely by the
+       UNIVERSITIES data list (add/remove a school = one line in site.ts). The
+       .marquee overflow:hidden is the mask, so the page never scrolls sideways.
+       Each copy is self-contained (logos carry their own trailing margin, track
+       gap:0) so translateX(-50%) loops with no half-gap seam. Under reduced
+       motion the track wraps to a static centered row and the duplicate hides. */}
+  <section class="marquee-section reveal">
+    <p class="marquee-section__lead">Our analysts study at…</p>
+    <div class="marquee">
+      <div class="marquee__track">
+        {UNIVERSITIES.map((u) => (
+          <img
+            class="marquee__logo"
+            src={`/logos/universities/${u.file}`}
+            alt={u.name}
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
+        {/* Byte-identical duplicate for the seamless loop — decorative, hidden
+            from assistive tech (each logo is announced once, from copy 1). */}
+        {UNIVERSITIES.map((u) => (
+          <img
+            class="marquee__logo"
+            src={`/logos/universities/${u.file}`}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ─── Closing Join Band ─────────────────────────────────────────────────
+       The final, singular conversion push: one Cinzel line + ONE Join CTA
+       (no second "Explore" intent here) + the quiet JD link. Deep-accent band
+       (matches the masthead) — cream text clears 8:1; the primary CTA inverts
+       to a cream fill so it pops against the dark band. */}
+  <section class="closing reveal">
+    <div class="closing__inner">
+      <h2 class="closing__heading">Be among the best.</h2>
+      <a
+        href={JOIN_FORM_URL}
+        class="cta cta--primary closing__cta"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>Join SEF</span>
+        <span class="cta__arrow" aria-hidden="true">→</span>
+      </a>
+      <a
+        href={JD_URL}
+        class="cta-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>View the role</span>
+        <span class="cta-link__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  {/* ─── Scroll-reveal island ──────────────────────────────────────────────
+       ONE shared IntersectionObserver fades up the below-the-fold sections.
+       No-IO or reduced-motion → reveal everything immediately so content is
+       NEVER stranded invisible. Hidden initial state is gated behind `.js`
+       (added at top of body), so non-JS users see everything too. */}
+  <script is:inline>
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
 </BaseLayout>
 
 <style>
@@ -457,6 +554,14 @@ const fmtDate = (d: Date) =>
     }
     .text-link:hover .text-link__arrow {
       transform: translateX(3px);
+    }
+    /* Closing CTA stays light on hover (ink fill would vanish into the band). */
+    .closing__cta:hover {
+      background: rgba(244, 238, 229, 0.88);
+      border-color: rgba(244, 238, 229, 0.88);
+      color: var(--color-accent);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px -8px rgba(8, 38, 31, 0.5);
     }
   }
 
@@ -748,6 +853,137 @@ const fmtDate = (d: Date) =>
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
+     UNIVERSITY MARQUEE (LND-05) — seamless grayscale logo loop.
+     ───────────────────────────────────────────────────────────────────────── */
+  .marquee-section {
+    padding-block: var(--space-4xl);
+  }
+  .marquee-section__lead {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    margin: 0 0 var(--space-2xl);
+  }
+  /* The overflow mask — the page itself never gets a horizontal scrollbar. */
+  .marquee {
+    overflow: hidden;
+    background: var(--color-surface-2);
+    padding-block: var(--space-lg);
+  }
+  .marquee__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+  }
+  /* Each logo carries its own trailing margin so a "copy" is self-contained →
+     translateX(-50%) loops with no half-gap seam. grayscale + dim at rest. */
+  .marquee__logo {
+    flex: none;
+    height: 36px;
+    max-height: 36px;
+    width: auto;
+    object-fit: contain;
+    margin-inline-end: clamp(var(--space-xl), 5vw, var(--space-4xl));
+    filter: grayscale(1);
+    opacity: 0.55;
+    transition:
+      filter var(--duration-standard) var(--ease-standard),
+      opacity var(--duration-standard) var(--ease-standard);
+  }
+  /* Constant motion = linear easing; only translate animates (GPU). Gated so
+     reduced-motion users get no drift. */
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee__track {
+      animation: marquee-scroll 40s linear infinite;
+    }
+    @keyframes marquee-scroll {
+      to { transform: translateX(-50%); }
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .marquee:hover .marquee__track {
+      animation-play-state: paused;
+    }
+    .marquee__logo:hover {
+      filter: grayscale(0);
+      opacity: 1;
+    }
+  }
+  /* Reduced motion: stop the loop, hide the duplicate, wrap to a static centered
+     row — all 8 logos still visible, no clipping. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+    }
+    .marquee__logo {
+      margin: var(--space-md) var(--space-lg);
+    }
+    .marquee__logo[aria-hidden="true"] {
+      display: none;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     CLOSING JOIN BAND — singular final conversion push on a deep accent band.
+     ───────────────────────────────────────────────────────────────────────── */
+  .closing {
+    background: var(--color-accent);
+    padding-block: var(--space-5xl);
+  }
+  .closing__inner {
+    max-width: 720px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-xl);
+  }
+  .closing__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--color-surface);
+    margin: 0;
+  }
+  /* Invert the primary CTA so it pops on the dark accent band (cream fill,
+     accent text) — the .cta-link below is already cream (8:1 on accent). */
+  .closing__cta {
+    background: var(--color-surface);
+    border-color: var(--color-surface);
+    color: var(--color-accent);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SCROLL-REVEAL — hidden state gated behind `.js` so non-JS users see all.
+     ───────────────────────────────────────────────────────────────────────── */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--duration-slow) var(--ease-cinematic),
+      transform var(--duration-slow) var(--ease-cinematic);
+  }
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  /* Defensive: reduced-motion never hides or slides content, regardless of JS. */
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
      RESPONSIVE — single mobile block (iPhone-first; owner reviews at 390px).
      ───────────────────────────────────────────────────────────────────────── */
   @media (max-width: 767px) {
@@ -793,6 +1029,15 @@ const fmtDate = (d: Date) =>
     }
     .pub-row__image {
       aspect-ratio: 16 / 9;
+    }
+    .marquee-section {
+      padding-block: var(--space-3xl);
+    }
+    .closing {
+      padding-block: var(--space-4xl);
+    }
+    .closing__inner {
+      padding-inline: var(--space-md);
     }
   }
 
