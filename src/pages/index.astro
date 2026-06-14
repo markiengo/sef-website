@@ -1,41 +1,379 @@
 ---
 // src/pages/index.astro
-// Proof-of-concept page — Walking Skeleton end-to-end slice.
-// Renders the SEF identity on the warm-ivory canvas using only CSS-variable tokens.
-// No brand hex hardcoded here (D-05/BRD-02). No CTA (Copywriting Contract: Phase 1 has none).
-// Phase 3 replaces this with the real cinematic landing page.
+// Phase 3 — the SEF recruitment-conversion landing page (root URL).
+// This plan (03-01) ships the conversion CORE: the cinematic, code-driven hero
+// (LND-01) + the Join/Explore/JD CTA cluster (LND-02). Later plans append the
+// WSO band, value-prop strip, featured reports, university marquee, and closing
+// band BELOW this hero section.
+//
+// Design: applies emil-design-eng (transform/opacity-only motion, :active press
+// feedback, custom --ease-cinematic, 60ms stagger, reduced-motion = gentler),
+// design-taste-frontend (anti-slop hero ≤4 text elements, one CTA per intent),
+// and high-end-visual-design (macro-whitespace, tinted shadows, GPU-only motion).
+// Tie-breaker: "quietly elite — restraint over bravado". ONE hero moment.
+//
+// Mirrors publications/index.astro: BaseLayout wrapper + scoped <style> + single
+// bottom @media(max-width:767px). var() tokens only (decorative gradient/shadow
+// rgba derived from brand hex is the sanctioned exception, matching the masthead).
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { JOIN_FORM_URL, JD_URL } from '../lib/site';
 ---
 
-<BaseLayout title="Saigon Equities Forum">
-  <main>
-    <h1 data-display>Saigon Equities Forum</h1>
-    <p class="subhead">Vietnam-focused financial research. Coming soon.</p>
-  </main>
+<BaseLayout
+  title="Saigon Equities Forum — Vietnam's markets, read by its sharpest students"
+  description="A student-led forum for serious equity and macro research on Vietnam."
+>
+  <section class="hero">
+    {/* Decorative, code-driven animated brand-tone gradient/mesh + static grain.
+        aria-hidden — all conveyed meaning lives in the real DOM text below. */}
+    <div class="hero__bg" aria-hidden="true">
+      <div class="hero__grain" aria-hidden="true"></div>
+    </div>
+
+    <div class="hero__content">
+      <h1 class="hero__headline">Vietnam's markets, read by its sharpest students.</h1>
+      <p class="hero__subhead">
+        A student-led forum for serious equity and macro research on Vietnam.
+      </p>
+      <div class="hero__cta-cluster">
+        <a
+          href={JOIN_FORM_URL}
+          class="cta cta--primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Join SEF</span>
+          <span class="cta__arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/publications" class="cta cta--outline">
+          <span>Explore work</span>
+          <span class="cta__arrow" aria-hidden="true">→</span>
+        </a>
+        <a
+          href={JD_URL}
+          class="cta-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>View the role</span>
+          <span class="cta-link__arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  main {
-    padding: var(--space-5xl) var(--space-xl);
+  /* ─────────────────────────────────────────────────────────────────────────
+     HERO (LND-01 / LND-02) — full-bleed, code-driven cinematic gradient.
+     LCP candidate = the Cinzel headline text (no media, no poster, no preload).
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    /* 100svh (NEVER vh) — avoids iOS Safari address-bar jump / CLS.
+       min-height (not height) so the hero still grows if copy ever wraps. */
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    /* Account for the 64px sticky header so content centers in the visible band. */
+    padding-block: var(--space-5xl);
+    overflow: hidden;
+  }
+
+  /* ── Animated brand-tone gradient/mesh (Approach A — layered radial blobs) ──
+     The TEXT BAND sits over a deep-emerald base so cream text clears WCAG
+     (≥4.5:1 body / ≥3:1 display). The base radial is authored dark-in-the-center
+     and the drifting blobs only ADD brand light at the edges — the worst-case
+     region directly behind the text stays deep emerald in every frame. */
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    /* Deep-emerald authored base: dark center (behind text) → brand green edges.
+       Decorative gradient rgba derived from brand hex — sanctioned exception
+       (matches masthead precedent, rgba(0,132,93,0.06)). */
+    background:
+      radial-gradient(
+        ellipse 90% 70% at 50% 42%,
+        rgba(8, 38, 31, 0.97) 0%,
+        rgba(11, 54, 43, 0.95) 38%,
+        rgba(0, 90, 64, 0.85) 72%,
+        rgba(0, 132, 93, 0.7) 100%
+      ),
+      var(--color-brand);
+  }
+
+  /* Two soft drifting blobs add the "alive, expensive" motion. blur() is set
+     ONCE here, never animated (cheap); only transform animates (GPU). */
+  .hero__bg::before,
+  .hero__bg::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  /* Brand-green glow drifting in from the lower-left. */
+  .hero__bg::before {
+    width: 70vmax;
+    height: 70vmax;
+    left: -18vmax;
+    bottom: -22vmax;
+    background: radial-gradient(circle, rgba(0, 132, 93, 0.55) 0%, transparent 70%);
+  }
+
+  /* Faint warm-gold glint from the upper-right (decorative gold — never text). */
+  .hero__bg::after {
+    width: 56vmax;
+    height: 56vmax;
+    right: -16vmax;
+    top: -20vmax;
+    background: radial-gradient(circle, rgba(200, 157, 41, 0.16) 0%, transparent 70%);
+  }
+
+  /* Drift only when the user has not asked for reduced motion. Under `reduce`
+     the @keyframes are simply undefined → blobs rest at their start position =
+     a static composed gradient (graceful degradation, per UI-SPEC). */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__bg::before {
+      animation: hero-drift-a 28s var(--ease-standard) infinite alternate;
+    }
+    .hero__bg::after {
+      animation: hero-drift-b 34s var(--ease-standard) infinite alternate;
+    }
+    @keyframes hero-drift-a {
+      to { transform: translate3d(9%, -6%, 0); }
+    }
+    @keyframes hero-drift-b {
+      to { transform: translate3d(-7%, 5%, 0); }
+    }
+  }
+
+  /* Static fine film grain — texture, not motion. Adds the "expensive" tactility.
+     Inline SVG feTurbulence data-URI = zero network request, fully owned. */
+  .hero__grain {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ── Hero content column ── */
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
     max-width: 1280px;
     margin-inline: auto;
+    padding-inline: var(--space-xl);
+    /* Constrain the text measure within the wide column for an editorial feel. */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  h1[data-display] {
+  .hero__headline {
     font-family: var(--font-display);
     font-size: var(--text-display);
-    font-weight: 400;
-    color: var(--color-ink);
+    font-weight: 400; /* Cinzel — the size carries the weight (never 500/600/700) */
     line-height: 1.1;
-    margin: 0 0 var(--space-lg) 0;
+    /* Cream on deep emerald — ≥3:1 for display, comfortably cleared. */
+    color: var(--color-surface);
+    max-width: 16ch; /* keeps the headline to ≤2 lines at desktop */
+    margin: 0;
+    text-wrap: balance;
   }
 
-  .subhead {
+  .hero__subhead {
     font-family: var(--font-body);
     font-size: var(--text-body);
-    color: var(--color-ink-muted);
-    max-width: 65ch;
-    margin: 0;
+    font-weight: 400;
+    line-height: 1.65;
+    /* Cream on deep emerald — ≥4.5:1 for body, comfortably cleared. */
+    color: var(--color-surface);
+    max-width: 52ch;
+    margin: var(--space-lg) 0 0;
+  }
+
+  .hero__cta-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md) var(--space-lg);
+    margin-top: var(--space-2xl);
+  }
+
+  /* ── Staged text entrance (runs once on first paint) ──
+     headline → subhead → CTA cluster fade-up, ~60ms stagger. transform/opacity
+     only. Custom --ease-cinematic over --duration-cinematic (emil "the one
+     deliberate moment" for a once-per-visit landing). */
+  .hero__content > * {
+    opacity: 0;
+    animation: hero-fade-up var(--duration-cinematic) var(--ease-cinematic) forwards;
+  }
+  .hero__content > :nth-child(1) { animation-delay: 0ms; }
+  .hero__content > :nth-child(2) { animation-delay: 60ms; }
+  .hero__content > :nth-child(3) { animation-delay: 120ms; }
+
+  @keyframes hero-fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Reduced motion: appear with a gentle opacity fade, no translate (defensive —
+     also unsticks opacity:0 should a future edit drop `forwards`). */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__content > * {
+      animation: none;
+      opacity: 1;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     CTA CLUSTER — inherits the .report-pdf-cta button language (Phase 2),
+     renamed to .cta--primary, plus an outline variant and a quiet text link.
+     ───────────────────────────────────────────────────────────────────────── */
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 700; /* 700 reserved for CTA labels (allowed) */
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: 3px;
+    /* Name exact properties — never `transition: all`. */
+    transition:
+      background-color var(--duration-standard) var(--ease-standard),
+      border-color var(--duration-standard) var(--ease-standard),
+      transform var(--duration-standard) var(--ease-standard),
+      box-shadow var(--duration-standard) var(--ease-standard),
+      color var(--duration-standard) var(--ease-standard);
+  }
+
+  .cta__arrow {
+    transition: transform var(--duration-standard) var(--ease-standard);
+  }
+
+  /* emil press feedback — subtle, fast. */
+  .cta:active {
+    transform: scale(0.98);
+  }
+
+  .cta:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Primary — filled emerald, cream text (8:1, always safe over any bg). */
+  .cta--primary {
+    color: var(--color-surface);
+    background: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+
+  /* Outline — same geometry, accent stroke, transparent fill. On the dark hero
+     the resting state reads in cream so it stays legible over deep emerald;
+     hover fills to solid cream with ink text (clear, restrained inversion). */
+  .cta--outline {
+    color: var(--color-surface);
+    background: transparent;
+    border: 1px solid var(--color-surface);
+  }
+
+  /* Quiet tertiary text link to the JD. Inherits the global <a> accent but is
+     rendered cream over the dark hero; it is a text affordance, not a button. */
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--color-surface);
+    text-decoration: none;
+    padding: var(--space-sm) var(--space-xs);
+    min-height: 44px;
+    transition: color var(--duration-standard) var(--ease-standard);
+  }
+
+  .cta-link__arrow {
+    transition: transform var(--duration-standard) var(--ease-standard);
+  }
+
+  .cta-link:focus-visible {
+    outline: 2px solid var(--color-surface);
+    outline-offset: 3px;
+  }
+
+  /* All hover enhancements gated behind hover:hover + pointer:fine so a tap on
+     touch never sticks a hovered state. */
+  @media (hover: hover) and (pointer: fine) {
+    .cta--primary:hover {
+      background: var(--color-ink);
+      border-color: var(--color-ink);
+      color: var(--color-surface);
+      transform: translateY(-1px);
+      /* Tinted shadow, never pure black (high-end rule). */
+      box-shadow: 0 6px 18px -8px rgba(29, 57, 55, 0.5);
+    }
+    .cta--outline:hover {
+      background: var(--color-surface);
+      border-color: var(--color-surface);
+      color: var(--color-ink);
+      transform: translateY(-1px);
+    }
+    .cta:hover .cta__arrow {
+      transform: translateX(3px);
+    }
+    .cta-link:hover {
+      color: rgba(244, 238, 229, 0.78);
+    }
+    .cta-link:hover .cta-link__arrow {
+      transform: translateX(3px);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     RESPONSIVE — single mobile block (iPhone-first; owner reviews at 390px).
+     ───────────────────────────────────────────────────────────────────────── */
+  @media (max-width: 767px) {
+    .hero {
+      padding-block: var(--space-4xl);
+    }
+    .hero__content {
+      padding-inline: var(--space-md);
+    }
+  }
+
+  /* Stack CTAs vertically full-width on phones. Primary stays first in DOM and
+     visual order; "View the role" sits last (it is already last in the DOM). */
+  @media (max-width: 480px) {
+    .hero__cta-cluster {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-md);
+      width: 100%;
+    }
+    .cta {
+      width: 100%;
+      justify-content: center;
+      min-height: 44px;
+    }
+    .cta-link {
+      width: 100%;
+      justify-content: center;
+    }
   }
 </style>
