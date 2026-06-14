@@ -6,3 +6,11 @@ node_modules/
 dist/
 .vercel/
 .astro/
+docs/
+CLAUDE.md
+team-intro/
+context/
+
+# sensitive — member PII, never commit
+past_members.csv
+**/past_members.csv
