@@ -30,18 +30,22 @@ html {
 }
 
 /* ─── Body defaults ──────────────────────────────────────────────────────── */
-/* The Seasons (400) as body default — a high-contrast display serif. Generous
-   line-height keeps dense copy comfortable; bump size/weight if it reads thin. */
+/* Kollektif (400) as body default — a clean geometric sans. Pairs with Cinzel
+   display headings; reads comfortably at body size with generous line-height. */
 
 body {
   background-color: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font-body);
-  font-weight: 400;  /* The Seasons Regular — default body weight */
+  font-weight: 400;  /* Kollektif Regular — default body weight */
   font-size: var(--text-body);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Kollektif ships ONLY 400 + 700 (regular/bold). Disable synthesis so the
+     browser never fakes intermediate/oblique weights — keeps bolding consistent.
+     Use only font-weight 400 or 700 anywhere --font-body is in effect. */
+  font-synthesis: none;
 }
 
 /* ─── Headings — Cinzel (display serif) ────────────────────────────────── */

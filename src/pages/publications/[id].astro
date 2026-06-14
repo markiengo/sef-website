@@ -80,6 +80,17 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
       </a>
     </header>
 
+    {report.data.keyStats.length > 0 && (
+      <dl class="report-stats" aria-label="Key figures">
+        {report.data.keyStats.map((stat) => (
+          <div class="report-stat">
+            <dt class="report-stat__value">{stat.value}</dt>
+            <dd class="report-stat__label">{stat.label}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+
     <div class="report-content">
       <Content />
     </div>
@@ -172,6 +183,7 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   .report-description {
     font-family: var(--font-body);
     font-size: var(--text-body);
+    font-weight: 400;
     color: var(--color-ink-muted);
     line-height: 1.7;
     max-width: none;        /* fill the column — no right-side dead space */
@@ -188,12 +200,9 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     align-items: center;
     font-family: var(--font-body);
     font-size: var(--text-label);
+    font-weight: 400;
     color: var(--color-ink-muted);
     margin-bottom: var(--space-xl);
-  }
-
-  .report-analysts {
-    font-weight: 400;
   }
 
   .report-date::before {
@@ -242,10 +251,48 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     outline-offset: 3px;
   }
 
+  /* Key figures band — sits between header and body, like a research-note
+     summary strip. Arial numerals (brand rule for data); responsive auto-fit. */
+  .report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-lg);
+    margin: 0 0 var(--space-3xl) 0;
+    padding: var(--space-xl);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-surface-3);
+    border-radius: 4px;
+  }
+
+  .report-stat {
+    margin: 0;
+    text-align: left;
+  }
+
+  .report-stat__value {
+    font-family: Arial, sans-serif;   /* brand rule: Arial for numeric data */
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-ink);
+    margin: 0;
+  }
+
+  .report-stat__label {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin: var(--space-xs) 0 0 0;
+  }
+
   /* MDX body */
   .report-content {
     font-family: var(--font-body);
     font-size: var(--text-body);
+    font-weight: 400;
     color: var(--color-ink);
     line-height: 1.75;
   }
@@ -256,24 +303,28 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     font-weight: 400;
     color: var(--color-ink);
     margin: var(--space-3xl) 0 var(--space-lg) 0;
-    border-bottom: 1px solid var(--color-gold);
+    border-bottom: 2px solid var(--color-accent);
     padding-bottom: var(--space-sm);
   }
 
   .report-content :global(h3) {
-    font-family: var(--font-display);  /* The Seasons — subheadings */
-    font-size: 1.4rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
     font-weight: 400;
     color: var(--color-ink);
     margin: var(--space-2xl) 0 var(--space-md) 0;
+    padding-left: var(--space-md);
+    border-left: 3px solid var(--color-accent);
   }
 
   .report-content :global(p) {
+    font-weight: 400;
     margin: 0 0 var(--space-lg) 0;
-    max-width: none;        /* fill the column — removes right-side dead space */
-    text-align: justify;    /* flush both edges — equal-length lines */
-    text-justify: auto;     /* browser auto-distributes inter-word spacing */
-    hyphens: auto;          /* clean justification, avoids large word gaps */
+    max-width: none;
+    text-align: justify;
+    text-justify: auto;
+    hyphens: auto;
+    line-height: 1.8;
   }
 
   .report-content :global(ul),
@@ -282,6 +333,7 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   }
 
   .report-content :global(li) {
+    font-weight: 400;
     margin-bottom: var(--space-sm);
   }
 
@@ -290,19 +342,20 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     border-collapse: collapse;
     font-size: var(--text-label);
     margin: var(--space-xl) 0;
-    font-family: Arial, sans-serif; /* brand rule: Arial for tables/graphs */
+    font-family: Arial, sans-serif;
   }
 
   .report-content :global(th) {
     background: var(--color-surface-2);
     color: var(--color-ink);
-    font-weight: 400;
+    font-weight: 700;
     text-align: left;
     padding: var(--space-sm) var(--space-md);
     border-bottom: 2px solid var(--color-surface-3);
   }
 
   .report-content :global(td) {
+    font-weight: 400;
     padding: var(--space-sm) var(--space-md);
     border-bottom: 1px solid var(--color-surface-3);
     color: var(--color-ink);
@@ -321,6 +374,7 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   }
 
   .report-content :global(blockquote p) {
+    font-weight: 400;
     margin: 0;
     color: var(--color-ink);
   }
@@ -331,15 +385,18 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     display: block;
     margin: var(--space-xl) 0;
     border: 1px solid var(--color-surface-3);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   .report-content :global(em) {
+    font-weight: 400;
     color: var(--color-ink-muted);
     font-style: italic;
   }
 
   .report-content :global(strong) {
-    font-weight: 700;  /* Kollektif Bold (shipped weight; no synthetic 600) */
+    font-weight: 700;
     color: var(--color-ink);
   }
 

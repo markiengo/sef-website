@@ -139,7 +139,34 @@ These stubs will 404 if a user clicks "Read full report" PDF CTA. Not a security
 
 ---
 
+## Chart Gap Closure (added 2026-06-14, commit 425cbb0)
+
+All 5 seeded reports now have at least one real inline chart extracted from the matching source `.docx` in `context/Deliverables/`. Each `.docx` was unzipped and `word/media/` was inspected; only web-renderable PNG rasters were used. EMF/WMF vectors were ignored. No charts were fabricated.
+
+| Report | Chart file | Source .docx | Figure description |
+|--------|-----------|-------------|--------------------|
+| 2026-vietnam-macro | `chart-vietnam-macro-fiscal.png` | Vietnam 2026 Macro Outlook.docx `image21.png` | Vietnam government budget: balance, revenue, and expenditure as % of GDP, 1998-2023 |
+| 2026-sbv-note | `chart-sbv-policy-rates-usdvnd.png` | SBV note.docx `image10.png` | SBV policy rates (refinancing, discount, interbank, repo) alongside USD/VND, 2020-early 2026 |
+| 2026-fpt-equity | `chart-fpt-domestic-it-revenue.png` | FPT Corporation Equity Report.docx `image21.png` | FPT domestic IT segment revenue and pre-tax profit margin, 2019-2024 |
+| 2026-masan-equity | `chart-masan-wincommerce-penetration.png` | Masan Project.docx `image7.png` | WinCommerce modern trade penetration vs. ASEAN peers (Vietnam 24%, Indonesia 35%, Thailand 39%) |
+| 2026-mbb-note | `chart-mbb-shareholder-structure.png` | MBB notes.docx `image1.png` | MBB shareholder structure — Viettel Group 48%, SCIC 13%, Vietnam Helicopter Corp 9% |
+
+All chart assets placed in `src/content/reports/_assets/`. Each MDX updated with `import` statement and `<img src={var.src} alt="..." width={var.width} height={var.height} />` following the exact gold report pattern. Build exits 0 (16 pages, all 6 `/publications/` routes).
+
+**Reports with no usable figures that would have needed skipping:** None — all 5 source `.docx` files had at least one PNG raster figure. MBB notes.docx had exactly 2 images; `image1.png` (shareholder pie chart) was used; `image2.png` (institutional buys/sells Excel export) was omitted as secondary.
+
+---
+
 ## NEEDS OWNER REVIEW
+
+### 0. Inline chart verification (NEW)
+
+Charts are now embedded in all 5 reports. Verify at `npx astro dev`:
+- `/publications/2026-vietnam-macro` → fiscal balance/revenue/expenditure chart renders below the Infrastructure section
+- `/publications/2026-sbv-note` → SBV policy rates + USD/VND chart renders above the "Policy Dilemma" section
+- `/publications/2026-fpt-equity` → FPT domestic IT revenue & margin chart renders above "Key Risks"
+- `/publications/2026-masan-equity` → WinCommerce ASEAN penetration chart renders above "The Modern Trade Thesis"
+- `/publications/2026-mbb-note` → MBB shareholder structure pie chart renders above "Business Structure"
 
 ### 1. Cover image quality — swap in final designed covers
 
@@ -203,10 +230,18 @@ No new network endpoints, auth paths, or trust boundary changes introduced. All 
 - `src/content/reports/2026-masan-equity.mdx` — FOUND
 - `src/content/reports/2026-mbb-note.mdx` — FOUND
 
+**Chart assets exist (gap closure 2026-06-14):**
+- `src/content/reports/_assets/chart-vietnam-macro-fiscal.png` — FOUND
+- `src/content/reports/_assets/chart-sbv-policy-rates-usdvnd.png` — FOUND
+- `src/content/reports/_assets/chart-fpt-domestic-it-revenue.png` — FOUND
+- `src/content/reports/_assets/chart-masan-wincommerce-penetration.png` — FOUND
+- `src/content/reports/_assets/chart-mbb-shareholder-structure.png` — FOUND
+
 **Commits exist:**
 - b156ae2 — cover PNGs — FOUND
 - 4209740 — seeded MDX files — FOUND
+- 425cbb0 — chart gap closure (5 chart PNGs + MDX embeds) — FOUND
 
-**Build verification:** `npx astro build` exits 0, 16 pages generated including all 6 `/publications/` routes.
+**Build verification:** `npx astro build` exits 0, 16 pages generated including all 6 `/publications/` routes (post chart-gap-closure build confirmed).
 
 ## Self-Check: PASSED

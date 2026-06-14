@@ -30,6 +30,13 @@ const reports = defineCollection({
       // Metadata
       sector: z.array(z.string()).default([]),
 
+      // Optional "key figures" band rendered after the report header (PUB design).
+      // Reusable across reports — equity reports can use valuation metrics, macro
+      // reports can use headline indicators. Empty array → band is not rendered.
+      keyStats: z
+        .array(z.object({ label: z.string(), value: z.string() }))
+        .default([]),
+
       // Analyst NAMES only — never email, phone, or any PII (privacy boundary).
       analysts: z.array(z.string()),
 

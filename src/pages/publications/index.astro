@@ -11,8 +11,19 @@ import { slugify } from '../../lib/slugify';
 
 const reports = await getReports();
 
-// Derive all unique sectors for the Sector filter dimension
+// Derive filter options from the live library so no dropdown ever offers a value
+// that matches zero publications (e.g. a "Snapshot" type nobody has published yet).
+const allDivisions = [...new Set(reports.map(r => r.data.division))].sort();
+const allTypes = [...new Set(reports.map(r => r.data.type))].sort();
 const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
+
+// Friendlier labels for the Type dropdown (values stay the schema enum).
+const TYPE_LABELS = {
+  Report: 'Research Report',
+  Note: 'Market Note',
+  Snapshot: 'Snapshot',
+  Insight: 'Insight',
+};
 ---
 
 <BaseLayout
@@ -33,70 +44,90 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
   <div class="filter-bar" role="search" aria-label="Filter publications">
     <div class="filter-bar__inner">
       <div class="filter-group">
-        <span class="filter-group__label">Division</span>
-        {['Macro', 'Equity'].map(val => (
-          <button class="filter-chip" data-dim="division" data-val={val}>{val}</button>
-        ))}
+        <label for="division-select" class="filter-group__label">Division</label>
+        <select id="division-select" class="filter-select" data-dim="division">
+          <option value="">All divisions</option>
+          {allDivisions.map(val => (
+            <option value={val}>{val}</option>
+          ))}
+        </select>
       </div>
       <div class="filter-group">
-        <span class="filter-group__label">Type</span>
-        {['Report', 'Note', 'Snapshot', 'Insight'].map(val => (
-          <button class="filter-chip" data-dim="type" data-val={val}>{val}</button>
-        ))}
+        <label for="type-select" class="filter-group__label">Format</label>
+        <select id="type-select" class="filter-select" data-dim="type">
+          <option value="">All formats</option>
+          {allTypes.map(val => (
+            <option value={val}>{TYPE_LABELS[val] ?? val}</option>
+          ))}
+        </select>
       </div>
       {allSectors.length > 0 && (
         <div class="filter-group">
-          <span class="filter-group__label">Sector</span>
-          {allSectors.map(val => (
-            <button class="filter-chip" data-dim="sector" data-val={val}>{val}</button>
-          ))}
+          <label for="sector-select" class="filter-group__label">Sector</label>
+          <select id="sector-select" class="filter-select" data-dim="sector">
+            <option value="">All sectors</option>
+            {allSectors.map(val => (
+              <option value={val}>{val}</option>
+            ))}
+          </select>
         </div>
       )}
       <div class="filter-bar__meta">
         <span id="pub-count" class="filter-count" aria-live="polite">
           {reports.length === 1 ? '1 publication' : `${reports.length} publications`}
         </span>
-        <a id="filter-reset" class="filter-reset" href="/publications" style="display:none">Clear all filters</a>
+        <button id="filter-reset" class="filter-reset" style="display:none">Clear filters</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── Card Grid ────────────────────────────────────────────────────── -->
-  <div class="pub-grid">
-    {reports.map(report => (
+  <!-- ─── Publication List ───────────────────────────────────────────────── -->
+  <div class="pub-list">
+    {reports.map((report, index) => (
       <article
-        class="pub-card"
+        class="pub-row"
         data-division={report.data.division}
         data-type={report.data.type}
         data-sector={report.data.sector.join('|')}
       >
-        <img
-          src={report.data.cover.src}
-          alt={report.data.title}
-          width={report.data.cover.width}
-          height={report.data.cover.height}
-        />
-        <div class="pub-card__chips">
-          <span class="chip chip--division">{report.data.division}</span>
-          <span class="chip chip--type">{report.data.type}</span>
+        <div class="pub-row__image">
+          {/* Local, schema-typed cover (no external CDN). When final covers are
+              delivered, replace the PNG in _assets/ — frontmatter `cover:` already
+              points to it, so no code change is needed here. */}
+          <img
+            src={report.data.cover.src}
+            alt={report.data.title}
+            width={report.data.cover.width}
+            height={report.data.cover.height}
+            loading={index < 3 ? "eager" : "lazy"}
+          />
         </div>
-        <div class="pub-card__body">
-          <h2 class="pub-card__title">
+        <div class="pub-row__content">
+          <div class="pub-row__meta">
+            <span class="pub-row__division">{report.data.division}</span>
+            <span class="pub-row__type">{report.data.type}</span>
+            {report.data.sector.map((s) => (
+              <span class="pub-row__sector">{s}</span>
+            ))}
+          </div>
+          <h2 class="pub-row__title">
             <a href={`/publications/${report.id}`}>{report.data.title}</a>
           </h2>
-          <p class="pub-card__desc">{report.data.description}</p>
-          <div class="pub-card__byline">
-            {report.data.analysts.map((name, i) => (
-              <>
-                {i > 0 && <span class="pub-card__byline-sep">, </span>}
-                <a href={`/team/${slugify(name)}`} onclick="event.stopPropagation()">{name}</a>
-              </>
-            ))}
-            <span class="pub-card__dot" aria-hidden="true">·</span>
-            <span class="pub-card__date">
-              {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' }).format(report.data.publishedAt)}
+          <p class="pub-row__desc">{report.data.description}</p>
+          <div class="pub-row__byline">
+            <span class="pub-row__analysts">
+              {report.data.analysts.map((name, i) => (
+                <>
+                  {i > 0 && <span>, </span>}
+                  <a href={`/team/${slugify(name)}`}>{name}</a>
+                </>
+              ))}
+            </span>
+            <span class="pub-row__date">
+              {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(report.data.publishedAt)}
             </span>
           </div>
+          <a href={`/publications/${report.id}`} class="pub-row__cta">Read report →</a>
         </div>
       </article>
     ))}
@@ -113,8 +144,8 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
   <script is:inline>
   document.addEventListener('DOMContentLoaded', function () {
     var active = { division: null, type: null, sector: null };
-    var cards = document.querySelectorAll('.pub-card');
-    var chips = document.querySelectorAll('.filter-chip');
+    var cards = document.querySelectorAll('.pub-row');
+    var selects = document.querySelectorAll('.filter-select');
     var countEl = document.getElementById('pub-count');
     var emptyEl = document.getElementById('pub-empty');
     var resetEl = document.getElementById('filter-reset');
@@ -137,23 +168,22 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
       if (resetEl) resetEl.style.display = hasActive ? '' : 'none';
     }
 
-    chips.forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        var dim = chip.dataset.dim;
-        var val = chip.dataset.val;
-        if (active[dim] === val) {
-          active[dim] = null;
-          chip.removeAttribute('data-active');
-        } else {
-          // Deactivate all chips in the same dimension before activating this one
-          chips.forEach(function (c) {
-            if (c.dataset.dim === dim) c.removeAttribute('data-active');
-          });
-          active[dim] = val;
-          chip.setAttribute('data-active', '');
-        }
+    selects.forEach(function (select) {
+      select.addEventListener('change', function () {
+        var dim = select.dataset.dim;
+        var val = select.value;
+        active[dim] = val || null;
         applyFilters();
       });
+    });
+
+    resetEl.addEventListener('click', function (e) {
+      e.preventDefault();
+      selects.forEach(function (select) {
+        select.value = '';
+      });
+      active = { division: null, type: null, sector: null };
+      applyFilters();
     });
   });
   </script>
@@ -216,7 +246,7 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
   /* ── Filter Bar ──────────────────────────────────────────────────────── */
   .filter-bar {
     position: sticky;
-    top: 64px; /* height of the sticky site header */
+    top: 64px;
     z-index: 10;
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-surface-3);
@@ -230,14 +260,13 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-md);
+    gap: var(--space-lg);
   }
 
   .filter-group {
     display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--space-xs);
   }
 
   .filter-group__label {
@@ -245,42 +274,33 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
     font-size: var(--text-label);
     font-weight: 400;
     color: var(--color-ink-muted);
-    letter-spacing: 0.04em;
-    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
-  .filter-chip {
-    height: 36px;
-    min-height: 44px; /* WCAG 2.5.5 touch target */
-    padding: 0 var(--space-md);
+  .filter-select {
     font-family: var(--font-body);
-    font-size: var(--text-label);
+    font-size: var(--text-body);
     font-weight: 400;
-    letter-spacing: 0.03em;
-    background: transparent;
+    color: var(--color-ink);
+    background: var(--color-surface);
     border: 1px solid var(--color-surface-3);
-    border-radius: 2px;
-    color: var(--color-ink-muted);
+    border-radius: 4px;
+    padding: var(--space-sm) var(--space-md);
+    min-width: 180px;
     cursor: pointer;
     transition: border-color var(--duration-fast) var(--ease-standard),
-                color var(--duration-fast) var(--ease-standard),
-                background var(--duration-fast) var(--ease-standard);
+                box-shadow var(--duration-fast) var(--ease-standard);
   }
 
-  .filter-chip:hover {
+  .filter-select:hover {
     border-color: var(--color-accent);
-    color: var(--color-accent);
   }
 
-  .filter-chip[data-active] {
-    background: var(--color-brand);
-    border-color: var(--color-brand);
-    color: var(--color-surface); /* cream on emerald — 4.7:1 AA for large interactive element */
-  }
-
-  .filter-chip:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+  .filter-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0, 132, 93, 0.1);
   }
 
   .filter-bar__meta {
@@ -303,185 +323,206 @@ const allSectors = [...new Set(reports.flatMap(r => r.data.sector))].sort();
     font-size: var(--text-label);
     font-weight: 400;
     color: var(--color-accent);
-    text-decoration: none;
-    white-space: nowrap;
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-standard),
+                color var(--duration-fast) var(--ease-standard);
   }
 
   .filter-reset:hover {
-    text-decoration: underline;
+    background: var(--color-accent);
+    color: var(--color-surface);
   }
 
-  /* Mobile filter: horizontal scroll */
   @media (max-width: 767px) {
     .filter-bar__inner {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-md);
       padding-inline: var(--space-md);
-      gap: var(--space-sm);
     }
 
-    .filter-bar__inner::-webkit-scrollbar {
-      display: none;
+    .filter-group {
+      width: 100%;
+    }
+
+    .filter-select {
+      width: 100%;
+      min-width: unset;
     }
 
     .filter-bar__meta {
       margin-left: 0;
+      justify-content: space-between;
     }
   }
 
-  /* ── Card Grid ───────────────────────────────────────────────────────── */
-  .pub-grid {
-    max-width: 1280px;
+  /* ── Publication List — editorial horizontal rows ─────────────────────── */
+  /* Each publication owns a full-width band: cover on the left, content on the
+     right, separated from its neighbours by a single hairline rule. No cards,
+     no columns — reads like the contents page of a research journal. */
+  .pub-list {
+    max-width: 1120px;
     margin-inline: auto;
-    padding: var(--space-xl) var(--space-xl);
+    padding: var(--space-2xl) var(--space-xl) var(--space-4xl);
+  }
+
+  .pub-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-xl);
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    gap: clamp(var(--space-lg), 4vw, var(--space-3xl));
+    align-items: center;
+    padding: var(--space-2xl) 0;
+    border-top: 1px solid var(--color-surface-3);
   }
 
-  @media (max-width: 1023px) {
-    .pub-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-    }
+  .pub-row:first-child {
+    border-top: none;
+    padding-top: var(--space-md);
   }
 
-  @media (max-width: 767px) {
-    .pub-grid {
-      grid-template-columns: 1fr;
-      gap: var(--space-lg);
-      padding-inline: var(--space-md);
-    }
-  }
-
-  /* ── Publication Card ────────────────────────────────────────────────── */
-  .pub-card {
+  /* Cover */
+  .pub-row__image {
+    overflow: hidden;
+    border-radius: 4px;
     background: var(--color-surface-2);
-    border: 1px solid var(--color-surface-3);
-    border-radius: 8px; /* D-06 explicit exception — owner requested glossy rounded cards */
-    box-shadow: 0 2px 8px -2px rgba(29, 57, 55, 0.10), 0 1px 3px -1px rgba(29, 57, 55, 0.08);
-    transition: transform var(--duration-standard) var(--ease-enter),
-                box-shadow var(--duration-standard) var(--ease-enter);
-    overflow: hidden;
+    aspect-ratio: 16 / 10;
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    .pub-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px -4px rgba(29, 57, 55, 0.18), 0 4px 8px -2px rgba(29, 57, 55, 0.12);
-    }
-  }
-
-  .pub-card img {
+  .pub-row__image img {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 100%;
     object-fit: cover;
-    object-position: center;
     display: block;
+    transition: transform var(--duration-slow, 0.5s) var(--ease-standard);
   }
 
-  .pub-card__chips {
-    padding: var(--space-sm) var(--space-md) 0;
+  .pub-row:hover .pub-row__image img {
+    transform: scale(1.03);
+  }
+
+  /* Content column */
+  .pub-row__content {
     display: flex;
-    gap: var(--space-xs);
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .pub-card__body {
-    padding: var(--space-sm) var(--space-md) var(--space-md);
-  }
-
-  .pub-card__title {
-    font-family: var(--font-display);
-    font-size: clamp(1rem, 1.5vw + 0.5rem, 1.375rem);
-    font-weight: 400;
-    color: var(--color-ink);
-    line-height: 1.25;
-    margin: 0 0 var(--space-sm) 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .pub-card__title a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .pub-card__title a:hover {
-    color: var(--color-accent);
-  }
-
-  .pub-card__desc {
-    font-family: var(--font-body);
-    font-size: var(--text-label);
-    color: var(--color-ink-muted);
-    line-height: 1.5;
-    margin: 0 0 var(--space-sm) 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    max-width: none; /* override global p { max-width: 65ch } */
-  }
-
-  .pub-card__byline {
+  .pub-row__meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs);
-    font-family: var(--font-body);
-    font-size: var(--text-label);
-    color: var(--color-ink-muted);
-  }
-
-  .pub-card__byline a {
-    color: var(--color-accent); /* 8.0:1 AAA — safe on surface-2 */
-    text-decoration: none;
-  }
-
-  .pub-card__byline a:hover {
-    text-decoration: underline;
-  }
-
-  .pub-card__byline-sep {
-    color: var(--color-ink-muted);
-  }
-
-  .pub-card__dot {
-    color: var(--color-surface-3);
-    margin-inline: var(--space-xs);
-  }
-
-  .pub-card__date {
-    color: var(--color-ink-muted);
-  }
-
-  /* ── Chip Variants ───────────────────────────────────────────────────── */
-  .chip {
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
     font-family: var(--font-body);
     font-size: var(--text-label);
     font-weight: 400;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    border-radius: 2px;
-    padding: 2px var(--space-sm);
-    display: inline-block;
   }
 
-  .chip--division {
-    color: var(--color-accent); /* 8.0:1 AAA */
-    border: 1px solid var(--color-accent);
-    background: transparent;
+  .pub-row__division {
+    color: var(--color-accent);
   }
 
-  .chip--type {
+  .pub-row__type,
+  .pub-row__sector {
     color: var(--color-ink-muted);
-    background: var(--color-surface-2);
-    border: 1px solid var(--color-surface-3);
+  }
+
+  /* Hairline dot separators between meta items */
+  .pub-row__meta > * + *::before {
+    content: '·';
+    margin-right: var(--space-sm);
+    color: var(--color-surface-3);
+  }
+
+  .pub-row__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .pub-row__title a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .pub-row:hover .pub-row__title a,
+  .pub-row__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .pub-row__desc {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    line-height: 1.65;
+    margin: 0 0 var(--space-lg) 0;
+    max-width: 56ch;
+  }
+
+  .pub-row__byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  .pub-row__analysts a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .pub-row__analysts a:hover {
+    text-decoration: underline;
+  }
+
+  .pub-row__date::before {
+    content: '·';
+    margin-right: var(--space-sm);
+    color: var(--color-surface-3);
+  }
+
+  .pub-row__cta {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-decoration: none;
+    margin-top: auto;
+    transition: gap var(--duration-fast) var(--ease-standard);
+  }
+
+  .pub-row__cta:hover {
+    color: var(--color-ink);
+  }
+
+  /* Stack to a single column on tablet/mobile */
+  @media (max-width: 767px) {
+    .pub-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      padding: var(--space-xl) 0;
+    }
+
+    .pub-row__image {
+      aspect-ratio: 16 / 9;
+    }
   }
 
   /* ── Empty State ─────────────────────────────────────────────────────── */
