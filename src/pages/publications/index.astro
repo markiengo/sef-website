@@ -91,14 +91,10 @@ const TYPE_LABELS = {
         data-sector={report.data.sector.join('|')}
       >
         <div class="pub-row__image">
-          {/* Local, schema-typed cover (no external CDN). When final covers are
-              delivered, replace the PNG in _assets/ — frontmatter `cover:` already
-              points to it, so no code change is needed here. */}
+          {/* Cover image — public path from frontmatter (public/images/) */}
           <img
-            src={report.data.cover.src}
+            src={report.data.cover}
             alt={report.data.title}
-            width={report.data.cover.width}
-            height={report.data.cover.height}
             loading={index < 3 ? "eager" : "lazy"}
           />
         </div>
@@ -246,7 +242,7 @@ const TYPE_LABELS = {
   /* ── Filter Bar ──────────────────────────────────────────────────────── */
   .filter-bar {
     position: sticky;
-    top: 64px;
+    top: 76px;
     z-index: 10;
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-surface-3);

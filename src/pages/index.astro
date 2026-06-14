@@ -17,7 +17,7 @@
 // rgba derived from brand hex is the sanctioned exception, matching the masthead).
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { JOIN_FORM_URL, JD_URL, WSO_BADGE_SRC, UNIVERSITIES } from '../lib/site';
+import { JOIN_FORM_URL, JD_URL, UNIVERSITIES, PARTNERS } from '../lib/site';
 import { getReports } from '../lib/content'; // MOD-02 seam — the only report-data adapter; pages never read the collection directly.
 
 // Featured flagship trio (LND-04). Featured-flagged first, then top up with the
@@ -29,11 +29,35 @@ const featured = [...picked, ...rest].slice(0, 3);
 
 const fmtDate = (d: Date) =>
   new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+
+// Ambient market tape — Vietnam's large-cap universe (the market SEF analyses).
+// Decorative context, NOT live quotes: symbol + name only, no prices implied.
+const COVERAGE = [
+  { sym: 'VNINDEX', name: 'VN-Index' },
+  { sym: 'FPT', name: 'FPT Corporation' },
+  { sym: 'VCB', name: 'Vietcombank' },
+  { sym: 'VHM', name: 'Vinhomes' },
+  { sym: 'MWG', name: 'Mobile World' },
+  { sym: 'MSN', name: 'Masan Group' },
+  { sym: 'HPG', name: 'Hoa Phat Group' },
+  { sym: 'MBB', name: 'MB Bank' },
+  { sym: 'GAS', name: 'PV Gas' },
+  { sym: 'SSI', name: 'SSI Securities' },
+  { sym: 'VIC', name: 'Vingroup' },
+  { sym: 'ACB', name: 'Asia Commercial Bank' },
+];
+
+// Use original colored logos with multiply blend mode for visibility on the light shelf background
+const UNI_WHITE = UNIVERSITIES.map((u) => ({
+  name: u.name,
+  src: '/logos/universities/' + u.file,
+}));
 ---
 
 <BaseLayout
   title="Saigon Equities Forum — Vietnam's markets, read by its sharpest students"
   description="A student-led forum for serious equity and macro research on Vietnam."
+  transparentHeader
 >
   {/* No-JS / reduced-motion guard: only when this runs do the below-the-fold
       .reveal sections adopt their hidden initial state (gated behind `.js`), so
@@ -42,90 +66,181 @@ const fmtDate = (d: Date) =>
   <script is:inline>document.documentElement.classList.add('js');</script>
 
   <section class="hero">
-    {/* Decorative, code-driven animated brand-tone gradient/mesh + static grain.
-        aria-hidden — all conveyed meaning lives in the real DOM text below. */}
+    {/* Full-bleed cinematic background (Saigon skyline at dusk). Drop the
+        generated photo at public/hero/saigon-dusk.jpg — until then the emerald
+        base + atmospheric scrim render an intentional placeholder, never a
+        broken frame. The scrim also IS the legibility layer: it darkens the
+        bottom + left so the headline clears WCAG once the photo lands. */}
     <div class="hero__bg" aria-hidden="true">
-      <div class="hero__grain" aria-hidden="true"></div>
+      <img class="hero__photo" src="/hero/saigon-dusk.jpg" alt="" fetchpriority="high" />
+      <div class="hero__scrim"></div>
+      <div class="hero__grain"></div>
     </div>
 
-    <div class="hero__content">
-      <h1 class="hero__headline">Vietnam's markets, read by its sharpest students.</h1>
-      <p class="hero__subhead">
-        A student-led forum for serious equity and macro research on Vietnam.
-      </p>
-      <div class="hero__cta-cluster">
-        <a
-          href={JOIN_FORM_URL}
-          class="cta cta--primary"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>Join SEF</span>
-          <span class="cta__arrow" aria-hidden="true">→</span>
-        </a>
-        <a href="/publications" class="cta cta--outline">
-          <span>Explore work</span>
-          <span class="cta__arrow" aria-hidden="true">→</span>
-        </a>
-        <a
-          href={JD_URL}
-          class="cta-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>View the role</span>
-          <span class="cta-link__arrow" aria-hidden="true">→</span>
-        </a>
+    <div class="hero__frame">
+      <div class="hero__band">
+        <div class="hero__lede">
+          <p class="hero__eyebrow">Saigon Equities Forum</p>
+          <h1 class="hero__headline">Read by Vietnam's<br />sharpest.</h1>
+          <p class="hero__subhead">
+            Institution-grade equity &amp; macro research on Vietnam — written by
+            students at the world's top universities and published in partnership
+            with Wall Street Oasis. We track the companies, sectors, and macro
+            forces moving the market, and share the analysis in full.
+          </p>
+          <div class="hero__cta-cluster">
+            <a
+              href={JOIN_FORM_URL}
+              class="cta cta--primary cta--hero"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>Join SEF</span>
+              <span class="cta__arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="/publications" class="cta-link cta-link--bright">
+              <span>Explore the work</span>
+              <span class="cta-link__arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+
+        <aside class="hero__aside">
+          <p class="hero__paragraph">
+            A small forum, admission by application. Read the work — then make
+            your case to join the students who write it.
+          </p>
+        </aside>
+      </div>
+
+    </div>
+
+    {/* University logos scroll directly on the green hero background */}
+    <div class="hero__shelf">
+      <div class="hero__shelf-inner">
+        <div class="logo-scroll">
+          <div class="logo-scroll__track">
+            {UNI_WHITE.map((u) => (
+              <img
+                class="logo-scroll__logo"
+                src={u.src}
+                alt={u.name}
+                loading="eager"
+                decoding="async"
+              />
+            ))}
+            {/* Byte-identical duplicate for the seamless loop — decorative. */}
+            {UNI_WHITE.map((u) => (
+              <img
+                class="logo-scroll__logo"
+                src={u.src}
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                decoding="async"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  {/* ─── WSO Partnership Band (LND-03) ─────────────────────────────────────
-       Proof, not a claim. Real horizontal badge, framed by a gold hairline, on a
-       slightly deeper surface so it reads as a distinct credential band. The ONE
-       locked context line states only the two true perks. */}
-  <section class="wso reveal">
-    <div class="wso__inner">
+  {/* ─── Network / affiliations (LND-03) — partners, collaborations, and where
+       alumni land, each tagged by relationship. Frosted-glass partner chips. */}
+  <section class="network reveal">
+    <div class="network__head">
       <hr class="rule" aria-hidden="true" />
-      <p class="kicker">OUR PARTNER</p>
-      <img
-        class="wso__badge"
-        src={WSO_BADGE_SRC}
-        alt="Wall Street Oasis — official partner"
-        loading="lazy"
-        decoding="async"
-      />
-      <p class="wso__context">
+      <h2 class="network__heading">The company we keep.</h2>
+      <p class="network__sub">
         Official partner of Wall Street Oasis — exclusive content and courses,
-        plus mentorship through its network.
+        plus mentorship through its network — alongside the firms our analysts
+        advise with and go on to join.
       </p>
+    </div>
+    <ul class="network__grid">
+      {PARTNERS.map((p) => (
+        <li class="partner glass">
+          <span class="partner__logo-wrap">
+            <img
+              class="partner__logo"
+              src={`/logos/partners/${p.file}`}
+              alt={`${p.name} — ${p.label}`}
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+          <span class="partner__label">{p.label}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {/* ─── Prestige by the numbers — dark stats band (the FOMO punch) ─────────
+       Big gold Cinzel numerals on deep emerald; count up on scroll-in. */}
+  <section class="stats reveal">
+    <div class="stats__inner">
+      <div class="stat">
+        <span class="stat__num" data-count="8">8</span>
+        <span class="stat__label">Universities worldwide</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" data-count="4">4</span>
+        <span class="stat__label">Continents represented</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" data-count="6">6</span>
+        <span class="stat__label">Flagship reports published</span>
+      </div>
+    </div>
+
+    {/* Market tape — terminal-style scrolling watchlist of Vietnam's large caps,
+        gold-on-dark under the stats. Ambient context, not live quotes. */}
+    <div class="ticker" aria-label="Vietnam large-cap market — the universe SEF analyses">
+      <div class="ticker__track">
+        {COVERAGE.map((c) => (
+          <span class="tick"><span class="tick__sym">{c.sym}</span><span class="tick__name">{c.name}</span></span>
+        ))}
+        {/* Byte-identical duplicate for the seamless loop (decorative). */}
+        {COVERAGE.map((c) => (
+          <span class="tick" aria-hidden="true"><span class="tick__sym">{c.sym}</span><span class="tick__name">{c.name}</span></span>
+        ))}
+      </div>
     </div>
   </section>
 
-  {/* ─── Prestige / Value Proposition (LND-01 support) ─────────────────────
-       Quietly elite: the elite signal is SHOWN, not shouted. Editorial 2-up,
-       negative space + a single hairline — no card-cliché, no kicker here (the
-       page's two section labels are spent on WSO + featured). */}
-  <section class="prestige reveal">
-    <div class="prestige__inner">
-      <div class="prestige__lede">
-        <h2 class="prestige__heading">Serious research, held to a professional standard.</h2>
-        <hr class="rule rule--ink" aria-hidden="true" />
-      </div>
-      <div class="prestige__points">
-        <p>
-          Our analysts study at NYU, Berkeley, UNC, Melbourne, Amsterdam, and VinUniversity —
-          and bring that rigor to coverage of Vietnam's listed equities and macro economy.
+  {/* ─── Why Join — 3-column value/FOMO pitch. Placed BEFORE the work: sell the
+       payoff first, then let the reports prove it can be delivered. */}
+  <section class="whyjoin reveal">
+    <div class="whyjoin__head">
+      <p class="kicker">WHY JOIN</p>
+      <h2 class="whyjoin__heading">An edge your peers won't have.</h2>
+    </div>
+    <div class="whyjoin__grid">
+      <article class="why">
+        <span class="why__num">01</span>
+        <h3 class="why__title">Exclusive access</h3>
+        <p class="why__body">
+          Wall Street Oasis courses, content, and mentorship from the network
+          professionals actually use — opened to members, closed to everyone else.
         </p>
-        <p>
-          As the official student partner of Wall Street Oasis, members reach exclusive
-          courses, content, and the mentorship network finance professionals already rely on.
+      </article>
+      <article class="why">
+        <span class="why__num">02</span>
+        <h3 class="why__title">A real track record</h3>
+        <p class="why__body">
+          Publish institution-grade research under your own name — a portfolio
+          recruiters respect, built years before your peers have one.
         </p>
-        <p>
-          Every report is written, reviewed, and defended to a professional standard — the
-          kind of work a desk would recognise, not a school project.
+      </article>
+      <article class="why">
+        <span class="why__num">03</span>
+        <h3 class="why__title">An elite circle</h3>
+        <p class="why__body">
+          Work beside analysts at NYU, Berkeley, UNC, Melbourne, Amsterdam, and
+          VinUniversity. Ambition compounds in the right company.
         </p>
-      </div>
+      </article>
     </div>
   </section>
 
@@ -140,15 +255,14 @@ const fmtDate = (d: Date) =>
     <div class="pub-list">
       {featured.map((report) => (
         <article class="pub-row">
-          <div class="pub-row__image">
+          {/* Cover image — actual report cover from the MDX frontmatter */}
+          <a class="pub-row__image" href={`/publications/${report.id}`} aria-hidden="true" tabindex="-1">
             <img
-              src={report.data.cover.src}
+              src={report.data.cover}
               alt={report.data.title}
-              width={report.data.cover.width}
-              height={report.data.cover.height}
-              loading="lazy"
+              loading="eager"
             />
-          </div>
+          </a>
           <div class="pub-row__content">
             <div class="pub-row__meta">
               <span class="pub-row__division">{report.data.division}</span>
@@ -178,39 +292,46 @@ const fmtDate = (d: Date) =>
     </div>
   </section>
 
-  {/* ─── University Logos Marquee (LND-05) ─────────────────────────────────
-       Social proof. A slow, seamless grayscale loop driven entirely by the
-       UNIVERSITIES data list (add/remove a school = one line in site.ts). The
-       .marquee overflow:hidden is the mask, so the page never scrolls sideways.
-       Each copy is self-contained (logos carry their own trailing margin, track
-       gap:0) so translateX(-50%) loops with no half-gap seam. Under reduced
-       motion the track wraps to a static centered row and the duplicate hides. */}
-  <section class="marquee-section reveal">
-    <p class="marquee-section__lead">Our analysts study at…</p>
-    <div class="marquee">
-      <div class="marquee__track">
-        {UNIVERSITIES.map((u) => (
-          <img
-            class="marquee__logo"
-            src={`/logos/universities/${u.file}`}
-            alt={u.name}
-            loading="lazy"
-            decoding="async"
-          />
-        ))}
-        {/* Byte-identical duplicate for the seamless loop — decorative, hidden
-            from assistive tech (each logo is announced once, from copy 1). */}
-        {UNIVERSITIES.map((u) => (
-          <img
-            class="marquee__logo"
-            src={`/logos/universities/${u.file}`}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-          />
-        ))}
-      </div>
+  {/* ─── Recruitment funnel — the path from reader to member, re-hooking the
+       CTA right after the work. Four low-friction steps; step 1 is the form. */}
+  <section class="path reveal">
+    <div class="path__head">
+      <p class="kicker">HOW YOU JOIN</p>
+      <h2 class="path__heading">From reader to analyst.</h2>
+    </div>
+    <ol class="path__steps">
+      <li class="step">
+        <span class="step__num">01</span>
+        <h3 class="step__title">Apply</h3>
+        <p class="step__body">Submit the application form — five minutes, no cover letter.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">02</span>
+        <h3 class="step__title">Conversation</h3>
+        <p class="step__body">A short interview with the team to find your division and fit.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">03</span>
+        <h3 class="step__title">Onboard</h3>
+        <p class="step__body">Join a cohort, unlock Wall Street Oasis, and get paired with a mentor.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">04</span>
+        <h3 class="step__title">Publish</h3>
+        <p class="step__body">Ship research under your own name — and start building the record.</p>
+      </li>
+    </ol>
+    <div class="path__cta">
+      <a
+        href={JOIN_FORM_URL}
+        class="cta cta--primary"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>Start your application</span>
+        <span class="cta__arrow" aria-hidden="true">→</span>
+      </a>
+      <p class="path__note">Applications are reviewed on a rolling basis.</p>
     </div>
   </section>
 
@@ -222,6 +343,10 @@ const fmtDate = (d: Date) =>
   <section class="closing reveal">
     <div class="closing__inner">
       <h2 class="closing__heading">Be among the best.</h2>
+      <p class="closing__sub">
+        Cohorts are small and admission is by application. The students who get in
+        don't wait — neither should you.
+      </p>
       <a
         href={JOIN_FORM_URL}
         class="cta cta--primary closing__cta"
@@ -267,144 +392,264 @@ const fmtDate = (d: Date) =>
       }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
       els.forEach(function (el) { io.observe(el); });
     })();
+
+    /* Count-up on the stats band when it scrolls into view (decorative — skipped
+       under reduced-motion / no-IO, where the static target number stands). */
+    (function () {
+      var nums = document.querySelectorAll('[data-count]');
+      if (!nums.length) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) return;
+      var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+      var run = function (el) {
+        var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+        var dur = 1100, start = null;
+        var step = function (ts) {
+          if (start === null) start = ts;
+          var p = Math.min((ts - start) / dur, 1);
+          el.textContent = Math.round(easeOut(p) * target).toString();
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = target.toString();
+        };
+        requestAnimationFrame(step);
+      };
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { run(e.target); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.6 });
+      nums.forEach(function (n) { n.textContent = '0'; io.observe(n); });
+    })();
+
+    /* Subtle hero parallax — the photo lags the scroll for depth. Decorative,
+       gated to fine pointers with motion allowed; transform-only (GPU). */
+    (function () {
+      var photo = document.querySelector('.hero__photo');
+      if (!photo) return;
+      var mq = window.matchMedia;
+      if (!mq || mq('(prefers-reduced-motion: reduce)').matches || !mq('(pointer: fine)').matches) return;
+      var ticking = false;
+      var update = function () {
+        var y = window.scrollY;
+        if (y < window.innerHeight) {
+          photo.style.transform = 'translate3d(0,' + (y * 0.04) + 'px,0) scale(1.12)';
+        }
+        ticking = false;
+      };
+      window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+      }, { passive: true });
+    })();
+
+    /* Cursor-tracked glow on the closing band — fine pointers only (no touch).
+       rAF-throttled; updates --mx/--my (px) and toggles .is-glowing on enter/leave. */
+    (function () {
+      var band = document.querySelector('.closing');
+      if (!band) return;
+      var mq = window.matchMedia;
+      if (mq && !mq('(pointer: fine)').matches) return;
+      var raf = null, x = 0, y = 0;
+      var apply = function () {
+        band.style.setProperty('--mx', x + 'px');
+        band.style.setProperty('--my', y + 'px');
+        raf = null;
+      };
+      band.addEventListener('pointermove', function (e) {
+        var r = band.getBoundingClientRect();
+        x = e.clientX - r.left;
+        y = e.clientY - r.top;
+        band.classList.add('is-glowing');
+        if (!raf) raf = requestAnimationFrame(apply);
+      }, { passive: true });
+      band.addEventListener('pointerleave', function () {
+        band.classList.remove('is-glowing');
+      });
+    })();
   </script>
 </BaseLayout>
 
 <style>
-  /* ─────────────────────────────────────────────────────────────────────────
-     HERO (LND-01 / LND-02) — full-bleed, code-driven cinematic gradient.
-     LCP candidate = the Cinzel headline text (no media, no poster, no preload).
-     ───────────────────────────────────────────────────────────────────────── */
+  /* Print/PDF: drop page margins so exported/printed width matches the screen
+     (also lets PDF capture render the true desktop multi-column layout). */
+  @page { margin: 0; }
 
+  /* ─────────────────────────────────────────────────────────────────────────
+     HERO — full-bleed cinematic photograph (Saigon skyline at dusk), in the
+     Perplexity layout: floating nav (BaseLayout) + bottom-left headline +
+     lower-right paragraph/CTA + corner captions. The emerald base & scrim are
+     the placeholder before the photo lands AND the legibility layer after.
+     ───────────────────────────────────────────────────────────────────────── */
   .hero {
     position: relative;
     isolation: isolate;
-    /* 100svh (NEVER vh) — avoids iOS Safari address-bar jump / CLS.
-       min-height (not height) so the hero still grows if copy ever wraps. */
-    min-height: 100svh;
+    min-height: 100svh;       /* svh, never vh — iOS address-bar CLS */
     display: flex;
-    align-items: center;
-    /* Account for the 64px sticky header so content centers in the visible band. */
-    padding-block: var(--space-5xl);
+    flex-direction: column;   /* content frame fills; the shelf grounds the base */
     overflow: hidden;
+    background: #082620;      /* deep emerald — shows through if the photo is missing */
   }
 
-  /* ── Animated brand-tone gradient/mesh (Approach A — layered radial blobs) ──
-     The TEXT BAND sits over a deep-emerald base so cream text clears WCAG
-     (≥4.5:1 body / ≥3:1 display). The base radial is authored dark-in-the-center
-     and the drifting blobs only ADD brand light at the edges — the worst-case
-     region directly behind the text stays deep emerald in every frame. */
   .hero__bg {
     position: absolute;
     inset: 0;
     z-index: -1;
-    overflow: hidden;
-    /* Deep-emerald authored base: dark center (behind text) → brand green edges.
-       Decorative gradient rgba derived from brand hex — sanctioned exception
-       (matches masthead precedent, rgba(0,132,93,0.06)). */
-    background:
-      radial-gradient(
-        ellipse 90% 70% at 50% 42%,
-        rgba(8, 38, 31, 0.97) 0%,
-        rgba(11, 54, 43, 0.95) 38%,
-        rgba(0, 90, 64, 0.85) 72%,
-        rgba(0, 132, 93, 0.7) 100%
-      ),
-      var(--color-brand);
   }
 
-  /* Two soft drifting blobs add the "alive, expensive" motion. blur() is set
-     ONCE here, never animated (cheap); only transform animates (GPU). */
-  .hero__bg::before,
-  .hero__bg::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
+  .hero__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 38%;
+    display: block;
+    /* Slight base zoom gives the parallax headroom so the translate never
+       reveals an edge; harmless static zoom when JS/parallax is off. */
+    transform: scale(1.12);
     will-change: transform;
   }
 
-  /* Brand-green glow drifting in from the lower-left. */
-  .hero__bg::before {
-    width: 70vmax;
-    height: 70vmax;
-    left: -18vmax;
-    bottom: -22vmax;
-    background: radial-gradient(circle, rgba(0, 132, 93, 0.55) 0%, transparent 70%);
+  /* Atmospheric grade + legibility scrim. Emerald/gold radials keep the palette
+     on-brand (and texture the placeholder); the linear darkening at the bottom +
+     left guarantees the cream headline clears WCAG over any photograph. */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(125% 95% at 78% 14%, rgba(0, 132, 93, 0.40) 0%, transparent 55%),
+      radial-gradient(80% 60% at 82% 8%, rgba(200, 157, 41, 0.20) 0%, transparent 55%),
+      linear-gradient(180deg, rgba(8, 38, 31, 0.35) 0%, rgba(8, 38, 31, 0.04) 34%, rgba(8, 38, 31, 0.55) 74%, rgba(8, 38, 31, 0.90) 100%),
+      linear-gradient(90deg, rgba(8, 38, 31, 0.62) 0%, rgba(8, 38, 31, 0.10) 48%, transparent 70%);
   }
 
-  /* Faint warm-gold glint from the upper-right (decorative gold — never text). */
-  .hero__bg::after {
-    width: 56vmax;
-    height: 56vmax;
-    right: -16vmax;
-    top: -20vmax;
-    background: radial-gradient(circle, rgba(200, 157, 41, 0.16) 0%, transparent 70%);
-  }
-
-  /* Drift only when the user has not asked for reduced motion. Under `reduce`
-     the @keyframes are simply undefined → blobs rest at their start position =
-     a static composed gradient (graceful degradation, per UI-SPEC). */
-  @media (prefers-reduced-motion: no-preference) {
-    .hero__bg::before {
-      animation: hero-drift-a 28s var(--ease-standard) infinite alternate;
-    }
-    .hero__bg::after {
-      animation: hero-drift-b 34s var(--ease-standard) infinite alternate;
-    }
-    @keyframes hero-drift-a {
-      to { transform: translate3d(9%, -6%, 0); }
-    }
-    @keyframes hero-drift-b {
-      to { transform: translate3d(-7%, 5%, 0); }
-    }
-  }
-
-  /* Static fine film grain — texture, not motion. Adds the "expensive" tactility.
-     Inline SVG feTurbulence data-URI = zero network request, fully owned. */
+  /* Static fine film grain — texture, not motion. Owned inline-SVG data-URI. */
   .hero__grain {
     position: absolute;
     inset: 0;
-    z-index: 0;
     pointer-events: none;
-    opacity: 0.05;
+    opacity: 0.06;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* ── Hero content column ── */
-  .hero__content {
+  /* ── Content frame — pinned to the bottom of the viewport (Perplexity layout) ── */
+  .hero__frame {
     position: relative;
     z-index: 1;
+    flex: 1 1 auto;          /* fills the space above the shelf */
     width: 100%;
     max-width: 1280px;
     margin-inline: auto;
-    padding-inline: var(--space-xl);
-    /* Constrain the text measure within the wide column for an editorial feel. */
+    padding: var(--space-5xl) var(--space-xl) var(--space-4xl);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    justify-content: flex-end;
+    color: var(--color-surface);
+  }
+
+  /* ── Translucent shelf at the hero's base (Harvey-style logo strip) ──
+     Light frosted glass so our mixed-background logo files blend cleanly
+     (multiply needs a light surface); heavy blur sells the glass. */
+  /* Logos sit directly on the green hero background with no shelf overlay */
+  .hero__shelf {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background: transparent;
+    border: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .hero__shelf-inner {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: var(--space-lg) var(--space-xl) var(--space-3xl);
+    background: transparent !important;
+  }
+  .logo-scroll {
+    overflow: hidden;
+    background: transparent !important;
+    padding: 0;
+  }
+  .logo-scroll__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    background: transparent;
+  }
+  .logo-scroll__logo {
+    flex: none;
+    height: 30px;
+    max-height: 30px;
+    width: auto;
+    object-fit: contain;
+    margin-inline-end: clamp(var(--space-xl), 5vw, var(--space-4xl));
+    mix-blend-mode: normal;
+    filter: none;
+    opacity: 0.85;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .logo-scroll__logo:hover {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .logo-scroll__track {
+      animation: marquee-scroll 36s linear infinite;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-scroll__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+    }
+    .logo-scroll__logo {
+      margin: var(--space-md) var(--space-lg);
+    }
+    .logo-scroll__logo[aria-hidden="true"] {
+      display: none;
+    }
+  }
+
+  .hero__band {
+    display: grid;
+    grid-template-columns: 1.3fr 0.9fr;
+    align-items: end;
+    gap: var(--space-3xl);
+  }
+
+  .hero__eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 229, 0.72);
+    margin: 0 0 var(--space-md);
   }
 
   .hero__headline {
     font-family: var(--font-display);
-    font-size: var(--text-display);
-    font-weight: 400; /* Cinzel — the size carries the weight (never 500/600/700) */
-    line-height: 1.1;
-    /* Cream on deep emerald — ≥3:1 for display, comfortably cleared. */
+    /* Punchier + wider: scales bigger than the base display step so the 2-word
+       line lands large in ≤2 lines (gpt-taste iron rule). */
+    /* Sized so "Read by Vietnam's" holds on one line, then <br> drops "sharpest." */
+    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    font-weight: 400; /* Cinzel — the size carries the weight (never 500/600) */
+    line-height: 1.05;
     color: var(--color-surface);
-    max-width: 16ch; /* keeps the headline to ≤2 lines at desktop */
     margin: 0;
     text-wrap: balance;
+    text-shadow: 0 1px 28px rgba(8, 38, 31, 0.4);
   }
 
   .hero__subhead {
     font-family: var(--font-body);
     font-size: var(--text-body);
     font-weight: 400;
-    line-height: 1.65;
-    /* Cream on deep emerald — ≥4.5:1 for body, comfortably cleared. */
-    color: var(--color-surface);
-    max-width: 52ch;
+    line-height: 1.6;
+    color: rgba(244, 238, 229, 0.88);
+    max-width: 52ch;          /* fuller block — visually matches the headline width */
+    text-align: justify;
+    text-justify: auto;
+    hyphens: auto;
     margin: var(--space-lg) 0 0;
   }
 
@@ -412,31 +657,68 @@ const fmtDate = (d: Date) =>
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-md) var(--space-lg);
-    margin-top: var(--space-2xl);
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
   }
 
-  /* ── Staged text entrance (runs once on first paint) ──
-     headline → subhead → CTA cluster fade-up, ~60ms stagger. transform/opacity
-     only. Custom --ease-cinematic over --duration-cinematic (emil "the one
-     deliberate moment" for a once-per-visit landing). */
-  .hero__content > * {
+  .hero__aside {
+    padding-bottom: var(--space-xs);
+  }
+
+  .hero__paragraph {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    line-height: 1.7;
+    color: rgba(244, 238, 229, 0.86);
+    max-width: 44ch;
+    margin: 0;
+  }
+
+  .hero__captions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(244, 238, 229, 0.14);
+  }
+
+  .hero__caption {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: rgba(244, 238, 229, 0.62);
+    margin: 0;
+    text-decoration: none;
+  }
+
+  .hero__caption--link {
+    transition: color var(--duration-standard) var(--ease-standard);
+  }
+
+  /* ── Staged hero entrance — fade-up once on load, transform/opacity only ── */
+  .hero__lede,
+  .hero__aside,
+  .hero__captions {
     opacity: 0;
     animation: hero-fade-up var(--duration-cinematic) var(--ease-cinematic) forwards;
   }
-  .hero__content > :nth-child(1) { animation-delay: 0ms; }
-  .hero__content > :nth-child(2) { animation-delay: 60ms; }
-  .hero__content > :nth-child(3) { animation-delay: 120ms; }
+  .hero__lede { animation-delay: 80ms; }
+  .hero__aside { animation-delay: 200ms; }
+  .hero__captions { animation-delay: 320ms; }
 
   @keyframes hero-fade-up {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: none; }
   }
 
-  /* Reduced motion: appear with a gentle opacity fade, no translate (defensive —
-     also unsticks opacity:0 should a future edit drop `forwards`). */
   @media (prefers-reduced-motion: reduce) {
-    .hero__content > * {
+    .hero__lede,
+    .hero__aside,
+    .hero__captions {
       animation: none;
       opacity: 1;
     }
@@ -486,6 +768,23 @@ const fmtDate = (d: Date) =>
     color: var(--color-surface);
     background: var(--color-accent);
     border: 1px solid var(--color-accent);
+  }
+
+  /* Hero variant — cream pill, accent text, pill radius. Inverts the primary so
+     it pops against the dark cinematic photo (the accent fill would otherwise
+     disappear into the emerald scrim). */
+  .cta--hero {
+    color: var(--color-accent);
+    background: var(--color-surface);
+    border-color: var(--color-surface);
+    border-radius: 999px;
+    box-shadow: 0 10px 30px -12px rgba(8, 38, 31, 0.6);
+  }
+
+  /* Bright text link beside the hero pill — full-cream, body-sized affordance. */
+  .cta-link--bright {
+    color: var(--color-surface);
+    font-size: var(--text-body);
   }
 
   /* Outline — same geometry, accent stroke, transparent fill. On the dark hero
@@ -563,6 +862,20 @@ const fmtDate = (d: Date) =>
       transform: translateY(-1px);
       box-shadow: 0 6px 18px -8px rgba(8, 38, 31, 0.5);
     }
+    /* Hero pill — stays light on hover over the photo, just lifts + brightens. */
+    .cta--hero:hover {
+      background: #ffffff;
+      border-color: #ffffff;
+      color: var(--color-accent);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px -12px rgba(8, 38, 31, 0.7);
+    }
+    .cta-link--bright:hover {
+      color: var(--color-surface);
+    }
+    .hero__caption--link:hover {
+      color: rgba(244, 238, 229, 0.92);
+    }
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
@@ -615,73 +928,398 @@ const fmtDate = (d: Date) =>
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
-     WSO PARTNERSHIP BAND (LND-03) — credential band on a deeper surface tint.
+     NETWORK / AFFILIATIONS (LND-03) — partners + alumni destinations + advisory.
+     Faint emerald-tinted band so the frosted-glass partner chips read.
      ───────────────────────────────────────────────────────────────────────── */
-  .wso {
-    background: var(--color-surface-2);
-    padding-block: var(--space-4xl);
+  .network {
+    background:
+      radial-gradient(110% 80% at 50% 0%, rgba(0, 132, 93, 0.07) 0%, transparent 60%),
+      var(--color-surface);
+    padding-block: var(--space-2xl) var(--space-4xl);
   }
-  .wso__inner {
-    max-width: 720px;
+  .network__head {
+    max-width: 760px;
     margin-inline: auto;
     padding-inline: var(--space-xl);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: var(--space-lg);
+    gap: var(--space-md);
   }
-  .wso__badge {
-    max-height: 56px;
-    width: auto;
-    height: auto;
+  .network__heading {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 2.7vw + 1rem, 2.7rem); /* ~35% larger than --text-heading */
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--color-ink);
+    margin: 0;
   }
-  .wso__context {
+  .network__sub {
     font-family: var(--font-body);
     font-size: var(--text-body);
     font-weight: 400;
     line-height: 1.65;
-    color: var(--color-ink);
-    max-width: 54ch;
+    color: var(--color-ink-muted);
+    max-width: 56ch;
     margin: 0;
+  }
+  .network__grid {
+    list-style: none;
+    max-width: 1080px;
+    margin: var(--space-3xl) auto 0;
+    padding-inline: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+  }
+  .partner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-xl) var(--space-lg);
+    border-radius: 8px;
+    transition:
+      transform var(--duration-standard) var(--ease-cinematic),
+      border-color var(--duration-standard) var(--ease-standard);
+  }
+  /* Frosted glass chip — translucent ivory + blur over the tinted band. */
+  .glass {
+    background: rgba(255, 255, 255, 0.5);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow: 0 10px 30px -18px rgba(29, 57, 55, 0.35);
+  }
+  .partner__logo-wrap {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .partner__logo {
+    max-height: 44px;
+    max-width: 100%;
+    width: auto;
+    object-fit: contain;
+    /* Drop each logo's white box into the chip; keep brand colour. */
+    mix-blend-mode: multiply;
+  }
+  .partner__label {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    text-align: center;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .partner:hover {
+      transform: translateY(-4px);
+      border-color: rgba(200, 157, 41, 0.55);
+    }
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
-     PRESTIGE / VALUE PROP (LND-01 support) — editorial 2-up, no cards.
+     STATS BAND — prestige by the numbers. Deep-emerald band, big gold Cinzel
+     numerals (gold reads high-contrast on dark; large display only).
      ───────────────────────────────────────────────────────────────────────── */
-  .prestige {
+  .stats {
+    background: #082620;
     padding-block: var(--space-4xl);
   }
-  .prestige__inner {
-    max-width: 1120px;
+  .stats__inner {
+    max-width: 1000px;
     margin-inline: auto;
     padding-inline: var(--space-xl);
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: clamp(var(--space-xl), 5vw, var(--space-4xl));
-    align-items: start;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2xl);
   }
-  .prestige__heading {
+  .stat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-sm);
+  }
+  /* Hairline divider between stat cells. */
+  .stat + .stat::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--space-2xl) / -2);
+    top: 14%;
+    bottom: 14%;
+    width: 1px;
+    background: rgba(244, 238, 229, 0.14);
+  }
+  .stat__num {
+    position: relative;
     font-family: var(--font-display);
-    font-size: var(--text-heading);
+    font-size: clamp(4rem, 8vw, 6.5rem);
     font-weight: 400;
-    line-height: 1.25;
+    line-height: 1;
+    color: var(--color-gold);
+    font-variant-numeric: lining-nums tabular-nums;
+    padding-bottom: var(--space-md);
+  }
+  /* Gold underline tick beneath each numeral — the drama accent (wipes in). */
+  .stat__num::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    transform-origin: center;
+    width: 36px;
+    height: 2px;
+    background: var(--color-gold);
+  }
+  .stat__label {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 229, 0.82);
+  }
+
+  /* ── Market ticker tape — terminal-style scrolling watchlist (high-finance
+     accent). Monospace symbols are a deliberate "data" exception to the locked
+     Cinzel/Kollektif system, matching the Arial-for-graphs precedent. ── */
+  .ticker {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid rgba(200, 157, 41, 0.28);
+    overflow: hidden;
+  }
+  .ticker__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ticker__track {
+      animation: ticker-scroll 60s linear infinite;
+    }
+    @keyframes ticker-scroll {
+      to { transform: translateX(-50%); }
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ticker:hover .ticker__track {
+      animation-play-state: paused;
+    }
+  }
+  .tick {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    margin-inline-end: var(--space-2xl);
+    white-space: nowrap;
+  }
+  /* Faint gold diamond separator before each symbol. */
+  .tick::before {
+    content: "";
+    align-self: center;
+    width: 4px;
+    height: 4px;
+    margin-inline-end: var(--space-2xl);
+    transform: rotate(45deg);
+    background: rgba(200, 157, 41, 0.55);
+  }
+  .tick__sym {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: var(--text-label);
+    letter-spacing: 0.06em;
+    color: var(--color-gold);
+  }
+  .tick__name {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    color: rgba(244, 238, 229, 0.55);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     WHY JOIN — 3-column value/FOMO pitch (gold rule above each column).
+     ───────────────────────────────────────────────────────────────────────── */
+  .whyjoin {
+    padding-block: var(--space-5xl);
+    background:
+      radial-gradient(90% 60% at 80% 0%, rgba(0, 132, 93, 0.05) 0%, transparent 55%),
+      var(--color-surface);
+  }
+  .whyjoin__head {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    margin-bottom: var(--space-3xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .whyjoin__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.05;
     color: var(--color-ink);
     max-width: 18ch;
     margin: 0;
   }
-  .prestige__points {
+  .whyjoin__grid {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(var(--space-xl), 4vw, var(--space-3xl));
+  }
+  /* Frosted card — gold top edge, translucent ivory + blur over the tinted band. */
+  .why {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-lg) var(--space-xl);
+    border-top: 2px solid var(--color-gold);
+    border-radius: 0 0 6px 6px;
+    background: rgba(255, 255, 255, 0.4);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 12px 32px -22px rgba(29, 57, 55, 0.4);
+    transition:
+      transform var(--duration-standard) var(--ease-cinematic),
+      border-color var(--duration-standard) var(--ease-standard),
+      box-shadow var(--duration-standard) var(--ease-standard);
   }
-  .prestige__points p {
+  .why__num {
+    font-family: var(--font-display);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--color-gold);
+  }
+  .why__title {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--color-ink);
+    margin: 0;
+    transition: color var(--duration-standard) var(--ease-standard);
+  }
+  .why__body {
     font-family: var(--font-body);
     font-size: var(--text-body);
     font-weight: 400;
     line-height: 1.7;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+  /* Hover physics — the column lifts and its title warms to accent. */
+  @media (hover: hover) and (pointer: fine) {
+    .why:hover {
+      transform: translateY(-6px);
+    }
+    .why:hover .why__title {
+      color: var(--color-accent);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     RECRUITMENT FUNNEL — "how you join" path, 4 steps on a gold track + re-hook
+     CTA. Surface-2 band to separate it from the ivory work + dark closing.
+     ───────────────────────────────────────────────────────────────────────── */
+  .path {
+    background: var(--color-surface-2);
+    padding-block: var(--space-5xl);
+  }
+  .path__head {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    margin-bottom: var(--space-3xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .path__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.05;
     color: var(--color-ink);
-    max-width: 65ch;
+    max-width: 16ch;
+    margin: 0;
+  }
+  .path__steps {
+    position: relative;
+    list-style: none;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding: 0 var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-2xl);
+  }
+  /* Continuous gold "track" the step numbers sit on. */
+  .path__steps::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: var(--space-xl);
+    right: var(--space-xl);
+    height: 2px;
+    background: var(--color-gold);
+    opacity: 0.5;
+  }
+  .step {
+    padding-top: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .step__num {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--color-gold);
+  }
+  .step__title {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--color-ink);
+    margin: 0;
+  }
+  .step__body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+  .path__cta {
+    max-width: 1120px;
+    margin: var(--space-3xl) auto 0;
+    padding-inline: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+  .path__note {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    color: var(--color-ink-muted);
     margin: 0;
   }
 
@@ -736,6 +1374,7 @@ const fmtDate = (d: Date) =>
     padding-top: var(--space-md);
   }
 
+  /* Cover image — actual report cover from MDX frontmatter */
   .pub-row__image {
     overflow: hidden;
     border-radius: 4px;
@@ -855,8 +1494,10 @@ const fmtDate = (d: Date) =>
   /* ─────────────────────────────────────────────────────────────────────────
      UNIVERSITY MARQUEE (LND-05) — seamless grayscale logo loop.
      ───────────────────────────────────────────────────────────────────────── */
+  /* Slim connective proof-strip: sits close under the hero (logos read as the
+     hero's proof), with a single clean gap into the network band below. */
   .marquee-section {
-    padding-block: var(--space-4xl);
+    padding-block: var(--space-3xl) var(--space-2xl);
   }
   .marquee-section__lead {
     text-align: center;
@@ -864,13 +1505,16 @@ const fmtDate = (d: Date) =>
     font-size: var(--text-body);
     font-weight: 400;
     color: var(--color-ink-muted);
-    margin: 0 0 var(--space-2xl);
+    margin: 0 0 var(--space-lg);
   }
   /* The overflow mask — the page itself never gets a horizontal scrollbar. */
   .marquee {
     overflow: hidden;
     background: var(--color-surface-2);
     padding-block: var(--space-lg);
+    /* Own stacking context so the logos' multiply blend only mixes with this
+       band, not whatever sits behind it. */
+    isolation: isolate;
   }
   .marquee__track {
     display: flex;
@@ -878,16 +1522,21 @@ const fmtDate = (d: Date) =>
     width: max-content;
   }
   /* Each logo carries its own trailing margin so a "copy" is self-contained →
-     translateX(-50%) loops with no half-gap seam. grayscale + dim at rest. */
+     translateX(-50%) loops with no half-gap seam.
+     The source files ship on mixed backgrounds (some white boxes, some
+     transparent, some colour discs). mix-blend-mode: multiply drops the white
+     into the band so only the mark shows; grayscale unifies them into one
+     monochrome family. Hover restores colour. */
   .marquee__logo {
     flex: none;
-    height: 36px;
-    max-height: 36px;
+    height: 50px;        /* +40% (was 36px) — fewer schools, so each reads larger */
+    max-height: 50px;
     width: auto;
     object-fit: contain;
     margin-inline-end: clamp(var(--space-xl), 5vw, var(--space-4xl));
+    mix-blend-mode: multiply;
     filter: grayscale(1);
-    opacity: 0.55;
+    opacity: 0.72;
     transition:
       filter var(--duration-standard) var(--ease-standard),
       opacity var(--duration-standard) var(--ease-standard);
@@ -896,7 +1545,7 @@ const fmtDate = (d: Date) =>
      reduced-motion users get no drift. */
   @media (prefers-reduced-motion: no-preference) {
     .marquee__track {
-      animation: marquee-scroll 40s linear infinite;
+      animation: marquee-scroll 36s linear infinite; /* +10% speed (was 40s) */
     }
     @keyframes marquee-scroll {
       to { transform: translateX(-50%); }
@@ -931,10 +1580,36 @@ const fmtDate = (d: Date) =>
      CLOSING JOIN BAND — singular final conversion push on a deep accent band.
      ───────────────────────────────────────────────────────────────────────── */
   .closing {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     background: var(--color-accent);
-    padding-block: var(--space-5xl);
+    padding-block: var(--space-4xl);
+  }
+  /* Cursor-tracked translucent glow — a warm gold→emerald radial that follows the
+     pointer across the band. Position fed by --mx/--my (px) from JS; fades in only
+     while the pointer is over the band. Decorative, pointer-driven, GPU-friendly. */
+  .closing::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      440px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(200, 157, 41, 0.22) 0%,
+      rgba(0, 132, 93, 0.20) 38%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-standard);
+  }
+  .closing.is-glowing::before {
+    opacity: 1;
   }
   .closing__inner {
+    position: relative;
+    z-index: 1;
     max-width: 720px;
     margin-inline: auto;
     padding-inline: var(--space-xl);
@@ -946,10 +1621,22 @@ const fmtDate = (d: Date) =>
   }
   .closing__heading {
     font-family: var(--font-display);
-    font-size: var(--text-display);
+    /* ~15% larger than --text-display; vw-scaled so it stays on ONE line down to
+       phones (min lets it shrink to fit rather than wrap). */
+    font-size: clamp(2.25rem, 6vw, 5.75rem);
     font-weight: 400;
     line-height: 1.1;
     color: var(--color-surface);
+    margin: 0;
+    white-space: nowrap;
+  }
+  .closing__sub {
+    font-family: var(--font-body);
+    font-size: 1.25rem;      /* 25% larger than --text-body */
+    font-weight: 400;
+    line-height: 1.6;
+    color: rgba(244, 238, 229, 0.82);
+    max-width: 52ch;
     margin: 0;
   }
   /* Invert the primary CTA so it pops on the dark accent band (cream fill,
@@ -974,11 +1661,68 @@ const fmtDate = (d: Date) =>
     opacity: 1;
     transform: none;
   }
+  /* Staggered children within a revealed section — emil cascade (~90ms steps). */
+  .js .reveal .stat,
+  .js .reveal .why,
+  .js .reveal .step {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--duration-slow) var(--ease-cinematic),
+      transform var(--duration-slow) var(--ease-cinematic);
+  }
+  .reveal.is-visible .stat,
+  .reveal.is-visible .why,
+  .reveal.is-visible .step {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal.is-visible .stat:nth-child(2),
+  .reveal.is-visible .why:nth-child(2),
+  .reveal.is-visible .step:nth-child(2) { transition-delay: 80ms; }
+  .reveal.is-visible .stat:nth-child(3),
+  .reveal.is-visible .why:nth-child(3),
+  .reveal.is-visible .step:nth-child(3) { transition-delay: 160ms; }
+  .reveal.is-visible .step:nth-child(4) { transition-delay: 240ms; }
+
+  /* Stat underline wipes in from center after the count-up begins. */
+  .js .reveal .stat__num::after {
+    transform: translateX(-50%) scaleX(0);
+    transition: transform var(--duration-slow) var(--ease-cinematic);
+    transition-delay: 220ms;
+  }
+  .reveal.is-visible .stat__num::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  /* Report cover "equity chart" lines draw themselves in, staggered per row. */
+  .js .reveal .pub-row__chart polyline {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.5s var(--ease-cinematic);
+  }
+  .reveal.is-visible .pub-row__chart polyline {
+    stroke-dashoffset: 0;
+  }
+  .reveal.is-visible .pub-row:nth-child(2) .pub-row__chart polyline { transition-delay: 160ms; }
+  .reveal.is-visible .pub-row:nth-child(3) .pub-row__chart polyline { transition-delay: 320ms; }
+
   /* Defensive: reduced-motion never hides or slides content, regardless of JS. */
   @media (prefers-reduced-motion: reduce) {
-    .js .reveal {
+    .js .reveal,
+    .js .reveal .stat,
+    .js .reveal .why,
+    .js .reveal .step {
       opacity: 1;
       transform: none;
+      transition: none;
+    }
+    .js .reveal .stat__num::after {
+      transform: translateX(-50%) scaleX(1);
+      transition: none;
+    }
+    .js .reveal .pub-row__chart polyline {
+      stroke-dashoffset: 0;
       transition: none;
     }
   }
@@ -987,28 +1731,76 @@ const fmtDate = (d: Date) =>
      RESPONSIVE — single mobile block (iPhone-first; owner reviews at 390px).
      ───────────────────────────────────────────────────────────────────────── */
   @media (max-width: 767px) {
-    .hero {
-      padding-block: var(--space-4xl);
+    .hero__frame {
+      padding: var(--space-4xl) var(--space-md) var(--space-lg);
     }
-    .hero__content {
-      padding-inline: var(--space-md);
-    }
-    .wso {
-      padding-block: var(--space-3xl);
-    }
-    .wso__inner {
-      padding-inline: var(--space-md);
-    }
-    .prestige {
-      padding-block: var(--space-3xl);
-    }
-    .prestige__inner {
+    .hero__band {
       grid-template-columns: 1fr;
       gap: var(--space-lg);
+    }
+    .hero__captions {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-xs);
+      margin-top: var(--space-xl);
+    }
+    .network {
+      padding-block: var(--space-xl) var(--space-3xl);
+    }
+    .network__head {
       padding-inline: var(--space-md);
     }
-    .prestige__heading {
+    .network__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+      padding-inline: var(--space-md);
+      margin-top: var(--space-2xl);
+    }
+    .stats {
+      padding-block: var(--space-3xl);
+    }
+    .stats__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+      padding-inline: var(--space-md);
+    }
+    .stat + .stat::before {
+      display: none;
+    }
+    .whyjoin {
+      padding-block: var(--space-3xl);
+    }
+    .whyjoin__head {
+      padding-inline: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+    .whyjoin__heading {
       max-width: none;
+    }
+    .whyjoin__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+      padding-inline: var(--space-md);
+    }
+    .path {
+      padding-block: var(--space-3xl);
+    }
+    .path__head,
+    .path__cta {
+      padding-inline: var(--space-md);
+    }
+    .path__steps {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding-inline: var(--space-md);
+    }
+    /* Vertical timeline on mobile: per-step gold rule instead of the top track. */
+    .path__steps::before {
+      display: none;
+    }
+    .step {
+      padding: var(--space-lg) 0;
+      border-top: 1px solid rgba(200, 157, 41, 0.5);
     }
     .featured {
       padding-top: var(--space-3xl);
@@ -1034,7 +1826,7 @@ const fmtDate = (d: Date) =>
       padding-block: var(--space-3xl);
     }
     .closing {
-      padding-block: var(--space-4xl);
+      padding-block: var(--space-3xl);
     }
     .closing__inner {
       padding-inline: var(--space-md);

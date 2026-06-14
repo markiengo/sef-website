@@ -32,6 +32,16 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   month: 'long',
   day: 'numeric',
 }).format(report.data.publishedAt);
+
+// Related posts — the 3 entries following this one in the newest-first list
+// (wrapping around), so every page surfaces a varied trio rather than the same one.
+const all = await getReports();
+const idx = all.findIndex((r) => r.id === report.id);
+const related: typeof all = [];
+for (let i = 1; related.length < 3 && i < all.length; i++) {
+  const cand = all[(idx + i) % all.length];
+  if (cand.id !== report.id) related.push(cand);
+}
 ---
 
 <BaseLayout
@@ -51,6 +61,15 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
 
       <h1 class="report-title" data-display>{report.data.title}</h1>
 
+      {/* Lead cover image — sits directly under the title (same image used on the
+          publications cards), grounding the page visually before the dek. */}
+      <img
+        class="report-cover"
+        src={report.data.cover}
+        alt={report.data.title}
+        loading="eager"
+      />
+
       <p class="report-description">{report.data.description}</p>
 
       <div class="report-byline">
@@ -67,17 +86,21 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
 
       {/* Primary CTA — open the full PDF. Filled emerald button (--color-accent,
           8:1 on cream) per WCAG role split (D-04). The web page is a teaser;
-          the full analysis lives in the PDF. */}
-      <a
-        href={report.data.pdfUrl}
-        class="report-pdf-cta"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Read the full ${report.data.title} report as a PDF`}
-      >
-        <span>Read the full report (PDF)</span>
-        <span class="report-pdf-cta__arrow" aria-hidden="true">→</span>
-      </a>
+          the full analysis lives in the PDF. Short-form Insight posts have no
+          standalone PDF (pdfUrl "#") — the page IS the publication, so we drop
+          the button rather than render a dead link. */}
+      {report.data.pdfUrl !== '#' && (
+        <a
+          href={report.data.pdfUrl}
+          class="report-pdf-cta"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Read the full ${report.data.title} report as a PDF`}
+        >
+          <span>Read the full report (PDF)</span>
+          <span class="report-pdf-cta__arrow" aria-hidden="true">→</span>
+        </a>
+      )}
     </header>
 
     {report.data.keyStats.length > 0 && (
@@ -95,6 +118,25 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
       <Content />
     </div>
   </article>
+
+  {related.length > 0 && (
+    <section class="more-posts" aria-label="More publications">
+      <div class="more-posts__head">
+        <p class="more-posts__eyebrow">Keep reading</p>
+        <h2 class="more-posts__heading">More from SEF</h2>
+      </div>
+      <div class="more-grid">
+        {related.map((r) => (
+          <a class="more-card" href={`/publications/${r.id}`}>
+            <img class="more-card__img" src={r.data.cover} alt="" loading="lazy" decoding="async" />
+            <span class="more-card__scrim" aria-hidden="true"></span>
+            <span class="more-card__meta">{r.data.division} · {r.data.type}</span>
+            <h3 class="more-card__title">{r.data.title}</h3>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
@@ -178,6 +220,17 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     color: var(--color-ink);
     line-height: 1.2;
     margin: 0 0 var(--space-lg) 0;
+  }
+
+  /* Lead cover image — full column width, cinematic 16:9 crop, under the title. */
+  .report-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+    border: 1px solid var(--color-surface-3);
+    margin: 0 0 var(--space-xl) 0;
   }
 
   .report-description {
@@ -389,6 +442,24 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  /* Figure exhibits — image + caption (used by report bodies that embed slides). */
+  .report-content :global(figure) {
+    margin: var(--space-2xl) 0;
+  }
+
+  .report-content :global(figure img) {
+    margin: 0;
+  }
+
+  .report-content :global(figcaption) {
+    margin-top: var(--space-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    color: var(--color-ink-muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+
   .report-content :global(em) {
     font-weight: 400;
     color: var(--color-ink-muted);
@@ -406,7 +477,87 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     margin: var(--space-3xl) 0;
   }
 
+  /* ─── More from SEF — text-over-image related-post gallery ─── */
+  .more-posts {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding: 0 var(--space-xl) var(--space-5xl);
+  }
+  .more-posts__head {
+    margin-bottom: var(--space-xl);
+  }
+  .more-posts__eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+  .more-posts__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    color: var(--color-ink);
+    margin: var(--space-xs) 0 0;
+  }
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+  .more-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    aspect-ratio: 4 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    isolation: isolate;
+    text-decoration: none;
+  }
+  .more-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    transition: transform var(--duration-slow) var(--ease-standard);
+  }
+  .more-card__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(8, 38, 31, 0) 28%, rgba(8, 38, 31, 0.5) 62%, rgba(8, 38, 31, 0.9) 100%);
+  }
+  .more-card__meta {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 229, 0.82);
+    padding: 0 var(--space-lg);
+  }
+  .more-card__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--color-surface);
+    margin: var(--space-xs) 0 0;
+    padding: 0 var(--space-lg) var(--space-lg);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .more-card:hover .more-card__img { transform: scale(1.05); }
+  }
+
   /* Responsive */
+  @media (max-width: 767px) {
+    .more-grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 640px) {
     .report-back {
       padding: var(--space-3xl) var(--space-md) 0;
@@ -415,5 +566,6 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     .report-page {
       padding: var(--space-md) var(--space-md) var(--space-4xl);
     }
+    .more-posts { padding: 0 var(--space-md) var(--space-4xl); }
   }
 </style>

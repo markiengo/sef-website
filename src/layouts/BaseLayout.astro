@@ -7,16 +7,20 @@
 import '../styles/tokens.css';
 import '../styles/global.css';
 import { Font } from 'astro:assets';
-import { JOIN_FORM_URL } from '../lib/site';
+import { JOIN_FORM_URL, CONTACT_EMAIL, INSTAGRAM_URL, LINKEDIN_URL } from '../lib/site';
 
 interface Props {
   title: string;
   description?: string;
+  /** Landing-page treatment: nav floats as a translucent pill over a full-bleed
+   *  hero, turning solid once scrolled. Defaults to the solid green header. */
+  transparentHeader?: boolean;
 }
 
 const {
   title,
   description = 'Vietnam-focused financial research by Saigon Equities Forum.',
+  transparentHeader = false,
 } = Astro.props;
 ---
 
@@ -31,13 +35,17 @@ const {
     <Font cssVariable="--font-kollektif" preload />
   </head>
   <body>
-    <header class="site-header">
+    <header class:list={["site-header", { "site-header--floating": transparentHeader }]}>
       <div class="site-header__inner">
-        <a href="/" class="site-logo" aria-label="Saigon Equities Forum home">SEF</a>
+        <a href="/" class="site-logo" aria-label="Saigon Equities Forum home">
+          <img src="/brand/mark-white.png" alt="" class="site-logo__mark" aria-hidden="true" />
+          <span class="site-logo__divider" aria-hidden="true"></span>
+          <span class="site-logo__word">Saigon Equities Forum</span>
+        </a>
         <nav class="site-nav" aria-label="Main navigation">
           <a href="/publications">Publications</a>
           <a href="/team">Team</a>
-          <a href="#insights" aria-label="News & Insights (coming soon)">Insights</a>
+          <a href="/about">About</a>
           <a
             href={JOIN_FORM_URL}
             class="site-nav__join"
@@ -61,11 +69,7 @@ const {
       <nav id="mobile-nav" class="site-nav--mobile" hidden aria-label="Mobile navigation">
         <a href="/publications" class="site-nav--mobile__link">Publications</a>
         <a href="/team" class="site-nav--mobile__link">Team</a>
-        <a
-          href="#insights"
-          class="site-nav--mobile__link"
-          aria-label="News & Insights (coming soon)"
-        >Insights</a>
+        <a href="/about" class="site-nav--mobile__link">About</a>
         <a
           href={JOIN_FORM_URL}
           class="site-nav--mobile__link site-nav--mobile__join"
@@ -78,7 +82,69 @@ const {
     <slot />
 
     <footer class="site-footer">
-      <p>&copy; 2026 Saigon Equities Forum</p>
+      <div class="site-footer__inner">
+        <div class="site-footer__brand">
+          <a href="/" class="site-footer__logo-link" aria-label="Saigon Equities Forum home">
+            <img src="/brand/mark-white.png" alt="" class="site-footer__mark" aria-hidden="true" />
+            <span class="site-footer__word">Saigon Equities Forum</span>
+          </a>
+          <p class="site-footer__tagline">
+            Institution-grade equity &amp; macro research on Vietnam, by students at the
+            world's top universities.
+          </p>
+        </div>
+
+        <nav class="site-footer__col" aria-label="Explore">
+          <h2 class="site-footer__heading">Explore</h2>
+          <a href="/publications">Publications</a>
+          <a href="/team">Team</a>
+          <a href="/about">About</a>
+        </nav>
+
+        <nav class="site-footer__col" aria-label="Connect">
+          <h2 class="site-footer__heading">Connect</h2>
+          <a href={JOIN_FORM_URL} target="_blank" rel="noopener noreferrer">Join SEF</a>
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </nav>
+
+        <div class="site-footer__news">
+          <h2 class="site-footer__heading">Stay in the loop</h2>
+          <p class="site-footer__news-copy">New research, in your inbox. No noise.</p>
+          <form
+            class="newsletter"
+            action={`mailto:${CONTACT_EMAIL}`}
+            method="post"
+            enctype="text/plain"
+          >
+            <input
+              class="newsletter__input"
+              type="email"
+              name="email"
+              placeholder="you@email.com"
+              aria-label="Email address"
+              required
+            />
+            <button class="newsletter__btn" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="site-footer__bar">
+        <p class="site-footer__copy">&copy; 2026 Saigon Equities Forum. All rights reserved.</p>
+        <div class="site-footer__socials">
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="SEF on Instagram">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
+          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="SEF on LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.3c0-1.26-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21H9z" />
+            </svg>
+          </a>
+        </div>
+      </div>
     </footer>
 
     <script is:inline>
@@ -97,6 +163,18 @@ const {
           }
         });
       })();
+
+      // Floating header: go solid once the hero is scrolled past.
+      (function () {
+        var header = document.querySelector('.site-header--floating');
+        if (!header) return;
+        var onScroll = function () {
+          if (window.scrollY > 40) header.classList.add('is-scrolled');
+          else header.classList.remove('is-scrolled');
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      })();
     </script>
   </body>
 </html>
@@ -112,26 +190,112 @@ const {
   }
 
   .site-header__inner {
-    height: 64px;
+    height: 76px;
     max-width: 1280px;
     margin-inline: auto;
     padding-inline: var(--space-xl);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition:
+      height var(--duration-standard) var(--ease-standard),
+      margin-inline var(--duration-standard) var(--ease-standard),
+      padding var(--duration-standard) var(--ease-standard),
+      background-color var(--duration-standard) var(--ease-standard),
+      border-color var(--duration-standard) var(--ease-standard),
+      border-radius var(--duration-standard) var(--ease-standard);
   }
 
+  /* ─── Floating (landing) variant — translucent pill over the full-bleed hero
+     that, on scroll, MORPHS into the exact solid-green bar the rest of the site
+     uses. The morph (pill → full-width bar) is what makes navigating from a
+     scrolled landing page to an inner page feel continuous. */
+  .site-header--floating {
+    position: fixed;
+    left: 0;
+    right: 0;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    padding-top: var(--space-md);
+    transition:
+      padding-top var(--duration-standard) var(--ease-standard),
+      background-color var(--duration-standard) var(--ease-standard),
+      border-color var(--duration-standard) var(--ease-standard);
+  }
+
+  /* At the top of the hero: a centred, inset, frosted pill. */
+  .site-header--floating .site-header__inner {
+    height: 64px;
+    max-width: 1120px;
+    margin-inline: var(--space-lg);
+    padding-inline: var(--space-lg);
+    border: 1px solid rgba(244, 238, 229, 0.16);
+    border-radius: 999px;
+    background: rgba(8, 38, 31, 0.30);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+  }
+  @media (min-width: 1152px) {
+    .site-header--floating .site-header__inner {
+      margin-inline: auto;
+    }
+  }
+
+  /* Once scrolled past the hero lede: drop the pill, fill the bar solid green —
+     now visually identical to the default .site-header on every other page. */
+  .site-header--floating.is-scrolled {
+    padding-top: 0;
+    background: var(--color-accent);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+  .site-header--floating.is-scrolled .site-header__inner {
+    height: 76px;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    border-color: transparent;
+    border-radius: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* ─── Logo lockup — building mark + hairline divider + Cinzel wordmark.
+     White on the green/dark header in every state. */
   .site-logo {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--color-surface);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
     text-decoration: none;
-    letter-spacing: 0.02em;
+    min-width: 0;
+  }
+
+  .site-logo__mark {
+    height: 22px;
+    width: auto;
+    display: block;
+    flex: none;
+  }
+
+  .site-logo__divider {
+    width: 1px;
+    height: 26px;
+    background: rgba(244, 238, 229, 0.32);
+    flex: none;
+  }
+
+  .site-logo__word {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--color-surface);
+    white-space: nowrap;
   }
 
   .site-logo:hover {
-    color: var(--color-surface);
+    opacity: 0.9;
   }
 
   /* Desktop nav */
@@ -141,7 +305,7 @@ const {
     gap: var(--space-xl);
   }
 
-  .site-nav a {
+  .site-nav a:not(.site-nav__join) {
     font-family: var(--font-body);
     font-size: 1.0625rem;
     font-weight: 400;
@@ -151,22 +315,47 @@ const {
     transition: color var(--duration-fast) var(--ease-standard);
   }
 
-  .site-nav a:hover {
+  .site-nav a:not(.site-nav__join):hover {
     color: rgba(244, 238, 229, 0.8);
   }
 
+  /* Join — a cream pill with accent-green label. Reads as the one button in the
+     bar; pill geometry + soft lift on hover make it the obvious primary action. */
   .site-nav__join {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-accent);
+    background: var(--color-surface);
     border: 1px solid var(--color-surface);
-    padding: var(--space-xs) var(--space-md);
-    border-radius: 2px;
-    min-height: 44px;
+    padding: 0 var(--space-lg);
+    border-radius: 999px;
+    min-height: 42px;
     display: inline-flex;
     align-items: center;
+    text-decoration: none;
+    box-shadow: 0 6px 18px -10px rgba(8, 38, 31, 0.5);
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
   }
 
-  .site-nav__join:hover {
-    background: var(--color-surface);
-    color: var(--color-accent) !important;
+  @media (hover: hover) and (pointer: fine) {
+    .site-nav__join:hover {
+      background: #ffffff;
+      border-color: var(--color-gold);
+      color: var(--color-accent);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px -10px rgba(8, 38, 31, 0.6);
+    }
+  }
+
+  .site-nav__join:active {
+    transform: scale(0.98);
   }
 
   /* Hamburger button */
@@ -225,6 +414,20 @@ const {
     .site-nav__hamburger {
       display: inline-flex;
     }
+
+    .site-header__inner,
+    .site-header--floating.is-scrolled .site-header__inner {
+      height: 64px;
+    }
+  }
+
+  /* On the narrowest phones the wordmark would crowd the hamburger — keep the
+     building mark (it carries the brand) and drop the text. */
+  @media (max-width: 419px) {
+    .site-logo__divider,
+    .site-logo__word {
+      display: none;
+    }
   }
 
   @media (min-width: 768px) {
@@ -237,18 +440,171 @@ const {
     }
   }
 
-  /* ─── Site Footer ─── */
+  /* ─── Site Footer — deep-emerald band, nav columns + newsletter CTA + socials ─── */
   .site-footer {
-    border-top: 1px solid var(--color-surface-3);
-    padding: var(--space-xl);
-    text-align: center;
+    background: #082620;
+    color: rgba(244, 238, 229, 0.72);
     font-family: var(--font-body);
-    font-size: var(--text-label);
-    color: var(--color-ink-muted);
   }
 
-  .site-footer p {
+  .site-footer__inner {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: var(--space-4xl) var(--space-xl) var(--space-2xl);
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1.8fr;
+    gap: var(--space-3xl);
+  }
+
+  .site-footer__logo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+  }
+  .site-footer__mark {
+    height: 20px;
+    width: auto;
+  }
+  .site-footer__word {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--color-surface);
+  }
+  .site-footer__tagline {
+    margin: var(--space-md) 0 0;
+    font-size: var(--text-label);
+    line-height: 1.6;
+    max-width: 34ch;
+  }
+
+  .site-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .site-footer__heading {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 229, 0.5);
+    margin: 0 0 var(--space-xs);
+  }
+  .site-footer__col a {
+    font-size: 1rem;
+    color: rgba(244, 238, 229, 0.82);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .site-footer__col a:hover {
+    color: var(--color-surface);
+  }
+
+  /* Newsletter CTA */
+  .site-footer__news-copy {
+    margin: 0 0 var(--space-md);
+    font-size: var(--text-label);
+    line-height: 1.6;
+    max-width: 32ch;
+  }
+  .newsletter {
+    display: flex;
+    gap: var(--space-sm);
+    max-width: 360px;
+  }
+  .newsletter__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--color-surface);
+    background: rgba(244, 238, 229, 0.06);
+    border: 1px solid rgba(244, 238, 229, 0.22);
+    border-radius: 999px;
+    padding: 0 var(--space-md);
+    height: 44px;
+    transition: border-color var(--duration-fast) var(--ease-standard);
+  }
+  .newsletter__input::placeholder { color: rgba(244, 238, 229, 0.45); }
+  .newsletter__input:focus {
+    outline: none;
+    border-color: var(--color-gold);
+  }
+  .newsletter__btn {
+    flex: none;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-accent);
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface);
+    border-radius: 999px;
+    padding: 0 var(--space-lg);
+    height: 44px;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+  .newsletter__btn:hover {
+    border-color: var(--color-gold);
+    transform: translateY(-1px);
+  }
+  .newsletter__btn:active { transform: scale(0.98); }
+
+  /* Bottom bar */
+  .site-footer__bar {
+    border-top: 1px solid rgba(244, 238, 229, 0.12);
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: var(--space-lg) var(--space-xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+  .site-footer__copy {
     margin: 0;
-    max-width: none;
+    font-size: var(--text-label);
+    color: rgba(244, 238, 229, 0.5);
+  }
+  .site-footer__socials {
+    display: flex;
+    gap: var(--space-md);
+  }
+  .site-footer__socials a {
+    color: rgba(244, 238, 229, 0.6);
+    display: inline-flex;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .site-footer__socials a:hover { color: var(--color-surface); }
+
+  @media (max-width: 900px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+    .site-footer__brand,
+    .site-footer__news {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 520px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+      padding: var(--space-3xl) var(--space-lg) var(--space-xl);
+    }
+    .site-footer__bar {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding-inline: var(--space-lg);
+    }
+    .newsletter { max-width: none; }
   }
 </style>

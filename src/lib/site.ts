@@ -13,19 +13,37 @@ export const JOIN_FORM_URL = 'https://forms.gle/wUxoKXsZkkEF1N1x5';
 // Job description — the secondary "View the role →" link, in a new tab.
 export const JD_URL = 'https://shorturl.at/GOnfJ';
 
+// ─── Contact & socials (footer) ───
+// PLACEHOLDERS — swap for SEF's real handles. The newsletter form opens a mail
+// draft to CONTACT_EMAIL; wire it to a real service (Buttondown/Mailchimp/Formspree)
+// when one exists by changing the <form action> in BaseLayout.astro.
+export const CONTACT_EMAIL = 'saigonequities@gmail.com'; // PLACEHOLDER — swap for SEF's real inbox
+export const INSTAGRAM_URL = 'https://www.instagram.com/sefvietnam/';
+export const LINKEDIN_URL = 'https://www.linkedin.com/company/sefvietnam/';
+
 // ─── Assets ───
 // WSO partnership badge — horizontal variant is delivered & preferred for the inline band.
 export const WSO_BADGE_SRC = '/logos/partners/wso-horizontal.png';
 
+// Network / affiliations — partners, collaborations, and where alumni land.
+// Each entry carries a relationship `label` so one section can hold mixed
+// relationship types. Files live in /public/logos/partners/.
+export const PARTNERS = [
+  { name: 'Wall Street Oasis',    file: 'wso-horizontal.png',      label: 'Official Partner' },
+  { name: 'FPT Securities',       file: 'fpt-securities.jpg',      label: 'Alumni Destination' },
+  { name: 'Rong Viet Securities', file: 'rongviet-securities.jpg', label: 'Industry Advisory' },
+  { name: 'SSIS',                 file: 'ssis-club.jpg',           label: 'Student Club Partner' },
+] as const;
+
 // University marquee data — ordered as the marquee should read.
-// Files are DELIVERED in /public/logos/universities/.
-// NYU is the only .webp — keep the extension. Adding/removing a school = one line here
-// + drop (or remove) the file; no markup change needed.
+// Files live in /public/logos/universities/. Filenames must match exactly (a
+// mismatch 404s the logo). Adding/removing a school = one line here + drop (or
+// remove) the file; no markup change needed.
 export const UNIVERSITIES = [
   { name: 'University of California, Berkeley',           file: 'uc-berkeley.png' },
-  { name: 'New York University',                          file: 'new-york-university.webp' },
+  { name: 'New York University',                          file: 'new-york-university.png' },
   { name: 'University of North Carolina at Chapel Hill',  file: 'unc-chapel-hill.png' },
-  { name: 'University of Melbourne',                      file: 'university-of-melbourne.png' },
+  { name: 'University of Melbourne',                      file: 'uni-melb.jpg' },
   { name: 'University of Amsterdam',                      file: 'university-of-amsterdam.png' },
   { name: 'Marquette University',                         file: 'marquette-university.png' },
   { name: 'University of Finance & Marketing',            file: 'university-of-finance-marketing.png' },

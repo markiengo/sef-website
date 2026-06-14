@@ -1,0 +1,386 @@
+---
+// src/pages/about.astro
+// About SEF — who we are, our mission, values, divisions, and network.
+// Content is drawn from the SEF Member Handbook (context/handbook.md) and the
+// founding "Illuminating Vietnamese Finance" post. Reuses the site design system
+// (tokens, kicker/rule primitives, .cta language) — scoped styles only.
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { JOIN_FORM_URL, UNIVERSITIES } from '../lib/site';
+import { getReports } from '../lib/content';
+
+const reportCount = (await getReports()).length;
+
+const VALUES = [
+  { name: 'Integrity', body: 'Honest, independent, unbiased — held to academic standard.' },
+  { name: 'Collaboration', body: 'Voices across disciplines and borders, in constructive debate.' },
+  { name: 'Public Service', body: 'Financial literacy and open research, for the public good.' },
+];
+
+const DIVISIONS = [
+  { name: 'Economics & Policy', body: 'Macro trends, SBV policy, and Vietnam-vs-ASEAN comparisons.' },
+  { name: 'Equity Research', body: 'HOSE and HNX coverage — company snapshots, sector notes, and valuation.' },
+];
+---
+
+<BaseLayout
+  title="About | Saigon Equities Forum"
+  description="Saigon Equities Forum is a student-led research platform focused on Vietnam — institution-grade macro and equity research on the VN-Index, by students from top universities across four continents."
+>
+  {/* ─── Masthead — deep-emerald band with the proposition + a quiet stat strip ─── */}
+  <section class="ab-hero">
+    <div class="ab-hero__inner">
+      <p class="ab-hero__eyebrow">About SEF</p>
+      <h1 class="ab-hero__headline">Built to illuminate<br />Vietnamese finance.</h1>
+      <p class="ab-hero__lede">
+        A student-led research platform focused on Vietnam — institution-grade macro and equity
+        research on the VN-Index, shared openly.
+      </p>
+      <dl class="ab-hero__stats">
+        <div><dt>{UNIVERSITIES.length}</dt><dd>Universities worldwide</dd></div>
+        <div><dt>4</dt><dd>Continents represented</dd></div>
+        <div><dt>{reportCount}</dt><dd>Publications &amp; counting</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  {/* ─── Mission ─── */}
+  <section class="ab-mission">
+    <div class="ab-mission__inner">
+      <div class="ab-mission__head">
+        <p class="kicker">Our mission</p>
+        <h2 class="ab-h2">One purpose, across four continents.</h2>
+      </div>
+      <div class="ab-mission__body">
+        <p>
+          SEF brings together students from renowned institutions across Asia, the US, Europe, and
+          Australia, with one purpose: to study, analyse, and promote Vietnam's markets.
+        </p>
+        <blockquote class="ab-quote">
+          A platform where ideas on Vietnam's capital markets can be debated, research is shared freely,
+          and the next generation of thinkers can reshape their community.
+        </blockquote>
+        <p class="ab-mission__note">
+          Founded in 2025 — first season, bootstrapped, and built to be inherited.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ─── Values ─── */}
+  <section class="ab-values">
+    <div class="ab-values__head">
+      <p class="kicker">What we stand for</p>
+      <h2 class="ab-h2">Three values, no exceptions.</h2>
+    </div>
+    <div class="ab-grid ab-grid--3">
+      {VALUES.map((v, i) => (
+        <article class="ab-card">
+          <span class="ab-card__num">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="ab-card__title">{v.name}</h3>
+          <p class="ab-card__body">{v.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {/* ─── Divisions ─── */}
+  <section class="ab-divisions">
+    <div class="ab-divisions__head">
+      <p class="kicker">How we're organised</p>
+      <h2 class="ab-h2">Two divisions, one VN-Index.</h2>
+    </div>
+    <div class="ab-grid ab-grid--2">
+      {DIVISIONS.map((d) => (
+        <article class="ab-div-card">
+          <h3 class="ab-div-card__title">{d.name}</h3>
+          <p class="ab-div-card__body">{d.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {/* ─── CTA ─── */}
+  <section class="ab-cta">
+    <div class="ab-cta__inner">
+      <h2 class="ab-cta__heading">Want in?</h2>
+      <p class="ab-cta__sub">
+        Small cohorts, admission by application. Publish serious research on Vietnam — under your own name.
+      </p>
+      <a href={JOIN_FORM_URL} class="cta cta--primary ab-cta__btn" target="_blank" rel="noopener noreferrer">
+        <span>Join SEF</span>
+        <span class="cta__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Shared primitives (mirrors index.astro) */
+  .kicker {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+  .ab-h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--color-ink);
+    margin: var(--space-xs) 0 0;
+  }
+
+  /* ── Masthead ── */
+  .ab-hero {
+    background:
+      radial-gradient(120% 90% at 80% 8%, rgba(0, 132, 93, 0.35) 0%, transparent 55%),
+      radial-gradient(70% 60% at 85% 0%, rgba(200, 157, 41, 0.16) 0%, transparent 55%),
+      #082620;
+  }
+  .ab-hero__inner {
+    max-width: 1080px;
+    margin-inline: auto;
+    padding: var(--space-5xl) var(--space-xl) var(--space-4xl);
+  }
+  .ab-hero__eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 229, 0.72);
+    margin: 0 0 var(--space-md);
+  }
+  .ab-hero__headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 6vw, 5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    color: var(--color-surface);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .ab-hero__lede {
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: rgba(244, 238, 229, 0.86);
+    max-width: 60ch;
+    text-align: justify;
+    hyphens: auto;
+    margin: var(--space-xl) 0 0;
+  }
+  .ab-hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xl);
+    margin: var(--space-3xl) 0 0;
+    padding-top: var(--space-xl);
+    border-top: 1px solid rgba(200, 157, 41, 0.28);
+  }
+  .ab-hero__stats div { margin: 0; }
+  .ab-hero__stats dt {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    line-height: 1;
+    color: var(--color-gold);
+  }
+  .ab-hero__stats dd {
+    margin: var(--space-sm) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 229, 0.78);
+  }
+
+  /* ── Mission ── */
+  .ab-mission {
+    background: var(--color-surface);
+    padding-block: var(--space-5xl);
+  }
+  .ab-mission__inner {
+    max-width: 1080px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(var(--space-xl), 5vw, var(--space-4xl));
+    align-items: start;
+  }
+  .ab-mission__body p {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.8;
+    color: var(--color-ink);
+    margin: 0;
+    text-align: justify;
+    hyphens: auto;
+  }
+  .ab-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--color-accent);
+    border-left: 3px solid var(--color-gold);
+    padding-left: var(--space-lg);
+    margin: var(--space-2xl) 0;
+  }
+  .ab-mission__note {
+    color: var(--color-ink-muted) !important;
+    font-size: var(--text-label) !important;
+    line-height: 1.7 !important;
+  }
+
+  /* ── Generic section grids ── */
+  .ab-values,
+  .ab-divisions {
+    padding-block: var(--space-4xl);
+  }
+  .ab-values { background: var(--color-surface-2); }
+  .ab-divisions { background: var(--color-surface); }
+  .ab-values__head,
+  .ab-divisions__head,
+  .ab-network__inner {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+  }
+  .ab-values__head,
+  .ab-divisions__head { margin-bottom: var(--space-2xl); }
+  .ab-grid {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: grid;
+    gap: clamp(var(--space-lg), 3vw, var(--space-2xl));
+  }
+  .ab-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .ab-grid--2 { grid-template-columns: repeat(2, 1fr); }
+
+  .ab-card {
+    border-top: 2px solid var(--color-gold);
+    padding-top: var(--space-md);
+  }
+  .ab-card__num {
+    font-family: var(--font-display);
+    font-size: var(--text-label);
+    letter-spacing: 0.1em;
+    color: var(--color-gold);
+  }
+  .ab-card__title {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    color: var(--color-ink);
+    margin: var(--space-sm) 0 var(--space-md);
+  }
+  .ab-card__body,
+  .ab-div-card__body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+
+  .ab-div-card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-surface-3);
+    border-radius: 8px;
+    padding: var(--space-xl);
+  }
+  .ab-div-card__title {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    color: var(--color-accent);
+    margin: 0 0 var(--space-md);
+  }
+
+  /* ── CTA ── */
+  .ab-cta {
+    background: var(--color-accent);
+    padding-block: var(--space-4xl);
+  }
+  .ab-cta__inner {
+    max-width: 640px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+  .ab-cta__heading {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 400;
+    color: var(--color-surface);
+    margin: 0;
+  }
+  .ab-cta__sub {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: rgba(244, 238, 229, 0.82);
+    max-width: 48ch;
+    margin: 0;
+  }
+  /* .cta / .cta--primary / .cta__arrow inherit the global button language;
+     invert the fill so it pops on the dark accent band. */
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: 3px;
+    transition: background-color var(--duration-standard) var(--ease-standard),
+      transform var(--duration-standard) var(--ease-standard),
+      box-shadow var(--duration-standard) var(--ease-standard);
+  }
+  .ab-cta__btn {
+    background: var(--color-surface);
+    color: var(--color-accent);
+    border: 1px solid var(--color-surface);
+  }
+  .cta__arrow { transition: transform var(--duration-standard) var(--ease-standard); }
+  .cta:active { transform: scale(0.98); }
+  @media (hover: hover) and (pointer: fine) {
+    .ab-cta__btn:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px -10px rgba(8, 38, 31, 0.6);
+    }
+    .cta:hover .cta__arrow { transform: translateX(3px); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 767px) {
+    .ab-hero__inner { padding: var(--space-4xl) var(--space-md) var(--space-3xl); }
+    .ab-hero__stats { gap: var(--space-xl); }
+    .ab-mission,
+    .ab-values,
+    .ab-divisions,
+    .ab-network { padding-block: var(--space-3xl); }
+    .ab-mission__inner { grid-template-columns: 1fr; gap: var(--space-xl); padding-inline: var(--space-md); }
+    .ab-values__head,
+    .ab-divisions__head,
+    .ab-network__inner,
+    .ab-grid { padding-inline: var(--space-md); }
+    .ab-grid--3,
+    .ab-grid--2 { grid-template-columns: 1fr; }
+    .ab-partners { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
