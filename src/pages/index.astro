@@ -17,7 +17,18 @@
 // rgba derived from brand hex is the sanctioned exception, matching the masthead).
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { JOIN_FORM_URL, JD_URL } from '../lib/site';
+import { JOIN_FORM_URL, JD_URL, WSO_BADGE_SRC } from '../lib/site';
+import { getReports } from '../lib/content'; // MOD-02 seam — the only report-data adapter; pages never read the collection directly.
+
+// Featured flagship trio (LND-04). Featured-flagged first, then top up with the
+// newest reports so the section ALWAYS renders exactly 3 even if a flag is dropped.
+const all = await getReports(); // already newest-first
+const picked = all.filter((r) => r.data.featured);
+const rest = all.filter((r) => !r.data.featured);
+const featured = [...picked, ...rest].slice(0, 3);
+
+const fmtDate = (d: Date) =>
+  new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
 ---
 
 <BaseLayout
@@ -60,6 +71,104 @@ import { JOIN_FORM_URL, JD_URL } from '../lib/site';
           <span class="cta-link__arrow" aria-hidden="true">→</span>
         </a>
       </div>
+    </div>
+  </section>
+
+  {/* ─── WSO Partnership Band (LND-03) ─────────────────────────────────────
+       Proof, not a claim. Real horizontal badge, framed by a gold hairline, on a
+       slightly deeper surface so it reads as a distinct credential band. The ONE
+       locked context line states only the two true perks. */}
+  <section class="wso">
+    <div class="wso__inner">
+      <hr class="rule" aria-hidden="true" />
+      <p class="kicker">OUR PARTNER</p>
+      <img
+        class="wso__badge"
+        src={WSO_BADGE_SRC}
+        alt="Wall Street Oasis — official partner"
+        loading="lazy"
+        decoding="async"
+      />
+      <p class="wso__context">
+        Official partner of Wall Street Oasis — exclusive content and courses,
+        plus mentorship through its network.
+      </p>
+    </div>
+  </section>
+
+  {/* ─── Prestige / Value Proposition (LND-01 support) ─────────────────────
+       Quietly elite: the elite signal is SHOWN, not shouted. Editorial 2-up,
+       negative space + a single hairline — no card-cliché, no kicker here (the
+       page's two section labels are spent on WSO + featured). */}
+  <section class="prestige">
+    <div class="prestige__inner">
+      <div class="prestige__lede">
+        <h2 class="prestige__heading">Serious research, held to a professional standard.</h2>
+        <hr class="rule rule--ink" aria-hidden="true" />
+      </div>
+      <div class="prestige__points">
+        <p>
+          Our analysts study at NYU, Berkeley, UNC, Melbourne, Amsterdam, and VinUniversity —
+          and bring that rigor to coverage of Vietnam's listed equities and macro economy.
+        </p>
+        <p>
+          As the official student partner of Wall Street Oasis, members reach exclusive
+          courses, content, and the mentorship network finance professionals already rely on.
+        </p>
+        <p>
+          Every report is written, reviewed, and defended to a professional standard — the
+          kind of work a desk would recognise, not a school project.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ─── Featured Flagship Reports (LND-04) ────────────────────────────────
+       The work speaks first. Phase-2 .pub-row language, read through the
+       getReports() adapter, each row linking into the live publications library. */}
+  <section class="featured">
+    <div class="featured__head">
+      <p class="kicker">SELECTED RESEARCH</p>
+      <h2 class="featured__heading">The work speaks first.</h2>
+    </div>
+    <div class="pub-list">
+      {featured.map((report) => (
+        <article class="pub-row">
+          <div class="pub-row__image">
+            <img
+              src={report.data.cover.src}
+              alt={report.data.title}
+              width={report.data.cover.width}
+              height={report.data.cover.height}
+              loading="lazy"
+            />
+          </div>
+          <div class="pub-row__content">
+            <div class="pub-row__meta">
+              <span class="pub-row__division">{report.data.division}</span>
+              <span class="pub-row__type">{report.data.type}</span>
+              {report.data.sector.map((s) => (
+                <span class="pub-row__sector">{s}</span>
+              ))}
+            </div>
+            <h3 class="pub-row__title">
+              <a href={`/publications/${report.id}`}>{report.data.title}</a>
+            </h3>
+            <p class="pub-row__desc">{report.data.description}</p>
+            <div class="pub-row__byline">
+              <span class="pub-row__analysts">{report.data.analysts.join(', ')}</span>
+              <span class="pub-row__date">{fmtDate(report.data.publishedAt)}</span>
+            </div>
+            <a href={`/publications/${report.id}`} class="pub-row__cta">Read report →</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="featured__more">
+      <a href="/publications" class="text-link">
+        <span>View all publications</span>
+        <span class="text-link__arrow" aria-hidden="true">→</span>
+      </a>
     </div>
   </section>
 </BaseLayout>
@@ -252,7 +361,7 @@ import { JOIN_FORM_URL, JD_URL } from '../lib/site';
     text-decoration: none;
     padding: var(--space-md) var(--space-xl);
     border-radius: 3px;
-    /* Name exact properties — never `transition: all`. */
+    /* Name exact transition properties — never the blanket keyword. */
     transition:
       background-color var(--duration-standard) var(--ease-standard),
       border-color var(--duration-standard) var(--ease-standard),
@@ -343,6 +452,299 @@ import { JOIN_FORM_URL, JD_URL } from '../lib/site';
     .cta-link:hover .cta-link__arrow {
       transform: translateX(3px);
     }
+    .text-link:hover {
+      color: var(--color-ink);
+    }
+    .text-link:hover .text-link__arrow {
+      transform: translateX(3px);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SHARED SECTION PRIMITIVES — kicker (the page's section label), hairline, link.
+     Budget rule: at most 2 kickers per page (WSO + featured); both already used.
+     ───────────────────────────────────────────────────────────────────────── */
+  .kicker {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+
+  .rule {
+    border: none;
+    border-top: 1px solid var(--color-gold);
+    opacity: 0.4;
+    width: 60px;
+    margin: 0;
+  }
+  /* Ink variant — quieter editorial hairline under the prestige heading. */
+  .rule--ink {
+    border-top-color: var(--color-ink);
+    opacity: 0.16;
+    width: 48px;
+    margin-top: var(--space-lg);
+  }
+
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+  .text-link__arrow {
+    transition: transform var(--duration-standard) var(--ease-standard);
+  }
+  .text-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     WSO PARTNERSHIP BAND (LND-03) — credential band on a deeper surface tint.
+     ───────────────────────────────────────────────────────────────────────── */
+  .wso {
+    background: var(--color-surface-2);
+    padding-block: var(--space-4xl);
+  }
+  .wso__inner {
+    max-width: 720px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-lg);
+  }
+  .wso__badge {
+    max-height: 56px;
+    width: auto;
+    height: auto;
+  }
+  .wso__context {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--color-ink);
+    max-width: 54ch;
+    margin: 0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     PRESTIGE / VALUE PROP (LND-01 support) — editorial 2-up, no cards.
+     ───────────────────────────────────────────────────────────────────────── */
+  .prestige {
+    padding-block: var(--space-4xl);
+  }
+  .prestige__inner {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(var(--space-xl), 5vw, var(--space-4xl));
+    align-items: start;
+  }
+  .prestige__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--color-ink);
+    max-width: 18ch;
+    margin: 0;
+  }
+  .prestige__points {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  .prestige__points p {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 65ch;
+    margin: 0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     FEATURED FLAGSHIP REPORTS (LND-04) — Phase-2 .pub-row language reused.
+     ───────────────────────────────────────────────────────────────────────── */
+  .featured {
+    padding-top: var(--space-5xl);
+  }
+  .featured__head {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .featured__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--color-ink);
+    margin: 0;
+  }
+  .featured__more {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding: 0 var(--space-xl) var(--space-5xl);
+  }
+
+  /* .pub-list / .pub-row — reused verbatim from publications/index.astro so the
+     featured trio reads as the live library. (The block's own 767px rules are
+     folded into the single RESPONSIVE block below to keep one mobile breakpoint.) */
+  .pub-list {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding: var(--space-2xl) var(--space-xl) var(--space-xl);
+  }
+
+  .pub-row {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    gap: clamp(var(--space-lg), 4vw, var(--space-3xl));
+    align-items: center;
+    padding: var(--space-2xl) 0;
+    border-top: 1px solid var(--color-surface-3);
+  }
+
+  .pub-row:first-child {
+    border-top: none;
+    padding-top: var(--space-md);
+  }
+
+  .pub-row__image {
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--color-surface-2);
+    aspect-ratio: 16 / 10;
+  }
+
+  .pub-row__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--duration-slow, 0.5s) var(--ease-standard);
+  }
+
+  .pub-row:hover .pub-row__image img {
+    transform: scale(1.03);
+  }
+
+  .pub-row__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pub-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .pub-row__division {
+    color: var(--color-accent);
+  }
+
+  .pub-row__type,
+  .pub-row__sector {
+    color: var(--color-ink-muted);
+  }
+
+  .pub-row__meta > * + *::before {
+    content: '·';
+    margin-right: var(--space-sm);
+    color: var(--color-surface-3);
+  }
+
+  .pub-row__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .pub-row__title a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .pub-row:hover .pub-row__title a,
+  .pub-row__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .pub-row__desc {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    line-height: 1.65;
+    margin: 0 0 var(--space-lg) 0;
+    max-width: 56ch;
+  }
+
+  .pub-row__byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  .pub-row__date::before {
+    content: '·';
+    margin-right: var(--space-sm);
+    color: var(--color-surface-3);
+  }
+
+  .pub-row__cta {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-decoration: none;
+    margin-top: auto;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .pub-row__cta:hover {
+    color: var(--color-ink);
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
@@ -354,6 +756,43 @@ import { JOIN_FORM_URL, JD_URL } from '../lib/site';
     }
     .hero__content {
       padding-inline: var(--space-md);
+    }
+    .wso {
+      padding-block: var(--space-3xl);
+    }
+    .wso__inner {
+      padding-inline: var(--space-md);
+    }
+    .prestige {
+      padding-block: var(--space-3xl);
+    }
+    .prestige__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      padding-inline: var(--space-md);
+    }
+    .prestige__heading {
+      max-width: none;
+    }
+    .featured {
+      padding-top: var(--space-3xl);
+    }
+    .featured__head {
+      padding-inline: var(--space-md);
+    }
+    .featured__more {
+      padding: 0 var(--space-md) var(--space-3xl);
+    }
+    .pub-list {
+      padding: var(--space-lg) var(--space-md) var(--space-md);
+    }
+    .pub-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      padding: var(--space-xl) 0;
+    }
+    .pub-row__image {
+      aspect-ratio: 16 / 9;
     }
   }
 
