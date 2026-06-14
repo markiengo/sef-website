@@ -69,7 +69,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The landing page displays the Wall Street Oasis partnership badge with brief context visible above the fold or within the first scroll
   4. The landing page shows featured flagship report cards that link into the live publications library pages from Phase 2
   5. The landing page shows a university logos strip ("our analysts study at…") identifying the universities SEF members attend
-**Plans**: TBD
+**Plans**: 3 plans
+  - [ ] 03-01-PLAN.md — Conversion core: src/lib/site.ts + BaseLayout Join-link refactor + cinematic code-driven hero + Join/Explore/JD CTAs (LND-01/LND-02)
+  - [ ] 03-02-PLAN.md — Credibility proof: WSO partnership band + prestige value-prop strip + featured-reports trio via adapter (LND-03/LND-04)
+  - [ ] 03-03-PLAN.md — Social proof + polish: university logos marquee + closing Join band + scroll-reveal entrances + final mobile/contrast pass (LND-05)
 **UI hint**: yes
 
 ### Phase 4: Team & Analyst Profiles
@@ -106,8 +109,6 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The hero section features one deliberate cinematic moment (e.g., fade/reveal, subtle parallax, or editorial entrance) without gimmickry — `prefers-reduced-motion` users see an equivalent non-motion state
   3. All cover and chart images are served as WebP or AVIF with responsive `srcset` — no unoptimized originals are delivered to the browser
   4. The site scores a passing Lighthouse performance run (LCP under 2.5 s, CLS under 0.1) on a representative page
-**Plans**: TBD
-**UI hint**: yes
 
 ## Progress
 
@@ -118,7 +119,7 @@ Phases execute in dependency order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 5 can
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete |  |
 | 2. Publications Library | 5/5 | Complete   | 2026-06-13 |
-| 3. Landing Page | 0/? | Not started | - |
+| 3. Landing Page | 0/3 | Planned | - |
 | 4. Team & Analyst Profiles | 0/? | Not started | - |
 | 5. News & Insights | 0/? | Not started | - |
 | 6. Polish & Motion | 0/? | Not started | - |
