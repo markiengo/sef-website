@@ -41,7 +41,7 @@ const reports = defineCollection({
       analysts: z.array(z.string()),
 
       // Assets
-      cover: image(), // Typed for astro:assets optimisation (Phase 6).
+      cover: z.string(), // Cover image path (string for now, can upgrade to image() later)
       pdfUrl: z.string(), // Full-report download URL or path (PUB-04).
 
       // Flags
