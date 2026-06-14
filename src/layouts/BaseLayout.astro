@@ -7,6 +7,7 @@
 import '../styles/tokens.css';
 import '../styles/global.css';
 import { Font } from 'astro:assets';
+import { JOIN_FORM_URL } from '../lib/site';
 
 interface Props {
   title: string;
@@ -38,7 +39,7 @@ const {
           <a href="/team">Team</a>
           <a href="#insights" aria-label="News & Insights (coming soon)">Insights</a>
           <a
-            href="https://forms.gle/placeholder"
+            href={JOIN_FORM_URL}
             class="site-nav__join"
             target="_blank"
             rel="noopener noreferrer"
@@ -66,7 +67,7 @@ const {
           aria-label="News & Insights (coming soon)"
         >Insights</a>
         <a
-          href="https://forms.gle/placeholder"
+          href={JOIN_FORM_URL}
           class="site-nav--mobile__link site-nav--mobile__join"
           target="_blank"
           rel="noopener noreferrer"
