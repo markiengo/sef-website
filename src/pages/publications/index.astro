@@ -338,24 +338,40 @@ const TYPE_LABELS = {
   }
 
   @media (max-width: 767px) {
+    /* Don't pin the filters on mobile — three stacked dropdowns are tall enough
+       to swallow the viewport, and a sticky block would follow you down the page
+       and bury the publications. Let them scroll away instead. */
+    .filter-bar {
+      position: static;
+      top: auto;
+      padding: var(--space-sm) 0 var(--space-md);
+    }
+
     .filter-bar__inner {
-      flex-direction: column;
-      align-items: stretch;
-      gap: var(--space-md);
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: var(--space-sm);
       padding-inline: var(--space-md);
     }
 
+    /* Two compact filters per row instead of one full-width per line */
     .filter-group {
-      width: 100%;
+      flex: 1 1 calc(50% - var(--space-sm));
+      min-width: 0;
+      gap: 2px;
     }
 
     .filter-select {
       width: 100%;
-      min-width: unset;
+      min-width: 0;
+      padding: var(--space-xs) var(--space-sm);
     }
 
     .filter-bar__meta {
+      flex-basis: 100%;
       margin-left: 0;
+      margin-top: var(--space-xs);
       justify-content: space-between;
     }
   }
