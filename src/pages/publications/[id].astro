@@ -7,6 +7,7 @@
 // render() renders the MDX body through the adapter seam.
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 import { getReports, getReport, render } from '../../lib/content';
 import { slugify } from '../../lib/slugify';
 
@@ -63,11 +64,14 @@ for (let i = 1; related.length < 3 && i < all.length; i++) {
 
       {/* Lead cover image — sits directly under the title (same image used on the
           publications cards), grounding the page visually before the dek. */}
-      <img
+      <Image
         class="report-cover"
         src={report.data.cover}
         alt={report.data.title}
+        widths={[480, 768, 1080]}
+        sizes="(max-width: 767px) 100vw, 720px"
         loading="eager"
+        fetchpriority="high"
       />
 
       <p class="report-description">{report.data.description}</p>
@@ -128,7 +132,7 @@ for (let i = 1; related.length < 3 && i < all.length; i++) {
       <div class="more-grid">
         {related.map((r) => (
           <a class="more-card" href={`/publications/${r.id}`}>
-            <img class="more-card__img" src={r.data.cover} alt="" loading="lazy" decoding="async" />
+            <Image class="more-card__img" src={r.data.cover} alt="" widths={[320, 480, 640]} sizes="(max-width: 767px) 100vw, 360px" loading="lazy" />
             <span class="more-card__scrim" aria-hidden="true"></span>
             <span class="more-card__meta">{r.data.division} · {r.data.type}</span>
             <h3 class="more-card__title">{r.data.title}</h3>

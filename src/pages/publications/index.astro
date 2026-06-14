@@ -6,6 +6,7 @@
 // Progressive enhancement: all cards render without JS; filter island is additive.
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 import { getReports } from '../../lib/content';
 import { slugify } from '../../lib/slugify';
 
@@ -91,10 +92,12 @@ const TYPE_LABELS = {
         data-sector={report.data.sector.join('|')}
       >
         <div class="pub-row__image">
-          {/* Cover image — public path from frontmatter (public/images/) */}
-          <img
+          {/* Cover image — optimized ImageMetadata from frontmatter (astro:assets) */}
+          <Image
             src={report.data.cover}
             alt={report.data.title}
+            widths={[320, 480, 640]}
+            sizes="(max-width: 767px) 100vw, 320px"
             loading={index < 3 ? "eager" : "lazy"}
           />
         </div>

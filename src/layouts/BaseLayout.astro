@@ -6,7 +6,8 @@
 
 import '../styles/tokens.css';
 import '../styles/global.css';
-import { Font } from 'astro:assets';
+import { Font, Image } from 'astro:assets';
+import markWhite from '../assets/brand/mark-white.png';
 import { JOIN_FORM_URL, CONTACT_EMAIL, INSTAGRAM_URL, LINKEDIN_URL } from '../lib/site';
 
 interface Props {
@@ -38,7 +39,7 @@ const {
     <header class:list={["site-header", { "site-header--floating": transparentHeader }]}>
       <div class="site-header__inner">
         <a href="/" class="site-logo" aria-label="Saigon Equities Forum home">
-          <img src="/brand/mark-white.png" alt="" class="site-logo__mark" aria-hidden="true" />
+          <Image src={markWhite} alt="" class="site-logo__mark" aria-hidden="true" loading="eager" />
           <span class="site-logo__divider" aria-hidden="true"></span>
           <span class="site-logo__word">Saigon Equities Forum</span>
         </a>
@@ -85,7 +86,7 @@ const {
       <div class="site-footer__inner">
         <div class="site-footer__brand">
           <a href="/" class="site-footer__logo-link" aria-label="Saigon Equities Forum home">
-            <img src="/brand/mark-white.png" alt="" class="site-footer__mark" aria-hidden="true" />
+            <Image src={markWhite} alt="" class="site-footer__mark" aria-hidden="true" loading="lazy" />
             <span class="site-footer__word">Saigon Equities Forum</span>
           </a>
           <p class="site-footer__tagline">

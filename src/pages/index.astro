@@ -17,8 +17,26 @@
 // rgba derived from brand hex is the sanctioned exception, matching the masthead).
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { JOIN_FORM_URL, JD_URL, UNIVERSITIES, PARTNERS } from '../lib/site';
 import { getReports } from '../lib/content'; // MOD-02 seam — the only report-data adapter; pages never read the collection directly.
+import heroImg from '../assets/hero/saigon-dusk.jpg';
+
+// Logos live in src/assets (astro:assets pipeline). Eager-glob them as ImageMetadata
+// keyed by filename, so site.ts can stay a plain filename list — owner adds a school
+// by editing one line there + dropping the file, no import wiring needed here.
+const uniLogos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/logos/universities/*.{png,jpg,jpeg,webp,avif}', { eager: true });
+const partnerLogos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/logos/partners/*.{png,jpg,jpeg,webp,avif}', { eager: true });
+const resolveLogo = (
+  map: Record<string, { default: ImageMetadata }>, file: string,
+): ImageMetadata => {
+  const key = Object.keys(map).find((k) => k.endsWith('/' + file));
+  if (!key) throw new Error(`Logo asset not found in src/assets: ${file}`);
+  return map[key].default;
+};
 
 // Featured flagship trio (LND-04). Featured-flagged first, then top up with the
 // newest reports so the section ALWAYS renders exactly 3 even if a flag is dropped.
@@ -50,7 +68,13 @@ const COVERAGE = [
 // Use original colored logos with multiply blend mode for visibility on the light shelf background
 const UNI_WHITE = UNIVERSITIES.map((u) => ({
   name: u.name,
-  src: '/logos/universities/' + u.file,
+  img: resolveLogo(uniLogos, u.file),
+}));
+
+// Partner cards — resolve each filename to its optimized asset once, up front.
+const PARTNER_CARDS = PARTNERS.map((p) => ({
+  ...p,
+  img: resolveLogo(partnerLogos, p.file),
 }));
 ---
 
@@ -66,13 +90,20 @@ const UNI_WHITE = UNIVERSITIES.map((u) => ({
   <script is:inline>document.documentElement.classList.add('js');</script>
 
   <section class="hero">
-    {/* Full-bleed cinematic background (Saigon skyline at dusk). Drop the
-        generated photo at public/hero/saigon-dusk.jpg — until then the emerald
-        base + atmospheric scrim render an intentional placeholder, never a
-        broken frame. The scrim also IS the legibility layer: it darkens the
-        bottom + left so the headline clears WCAG once the photo lands. */}
+    {/* Full-bleed cinematic background (Saigon skyline at dusk). Photo lives at
+        src/assets/hero/saigon-dusk.jpg and is served via astro:assets <Image>
+        (responsive srcset, optimized). The scrim also IS the legibility layer:
+        it darkens the bottom + left so the headline clears WCAG. */}
     <div class="hero__bg" aria-hidden="true">
-      <img class="hero__photo" src="/hero/saigon-dusk.jpg" alt="" fetchpriority="high" />
+      <Image
+        class="hero__photo"
+        src={heroImg}
+        alt=""
+        widths={[768, 1280, 1920]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+      />
       <div class="hero__scrim"></div>
       <div class="hero__grain"></div>
     </div>
@@ -121,23 +152,21 @@ const UNI_WHITE = UNIVERSITIES.map((u) => ({
         <div class="logo-scroll">
           <div class="logo-scroll__track">
             {UNI_WHITE.map((u) => (
-              <img
+              <Image
                 class="logo-scroll__logo"
-                src={u.src}
+                src={u.img}
                 alt={u.name}
                 loading="eager"
-                decoding="async"
               />
             ))}
             {/* Byte-identical duplicate for the seamless loop — decorative. */}
             {UNI_WHITE.map((u) => (
-              <img
+              <Image
                 class="logo-scroll__logo"
-                src={u.src}
+                src={u.img}
                 alt=""
                 aria-hidden="true"
                 loading="eager"
-                decoding="async"
               />
             ))}
           </div>
@@ -159,15 +188,14 @@ const UNI_WHITE = UNIVERSITIES.map((u) => ({
       </p>
     </div>
     <ul class="network__grid">
-      {PARTNERS.map((p) => (
+      {PARTNER_CARDS.map((p) => (
         <li class="partner glass">
           <span class="partner__logo-wrap">
-            <img
+            <Image
               class="partner__logo"
-              src={`/logos/partners/${p.file}`}
+              src={p.img}
               alt={`${p.name} — ${p.label}`}
               loading="lazy"
-              decoding="async"
             />
           </span>
           <span class="partner__label">{p.label}</span>
@@ -257,10 +285,12 @@ const UNI_WHITE = UNIVERSITIES.map((u) => ({
         <article class="pub-row">
           {/* Cover image — actual report cover from the MDX frontmatter */}
           <a class="pub-row__image" href={`/publications/${report.id}`} aria-hidden="true" tabindex="-1">
-            <img
+            <Image
               src={report.data.cover}
               alt={report.data.title}
-              loading="eager"
+              widths={[320, 480, 640]}
+              sizes="(max-width: 767px) 100vw, 320px"
+              loading="lazy"
             />
           </a>
           <div class="pub-row__content">

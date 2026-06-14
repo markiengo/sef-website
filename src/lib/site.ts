@@ -22,12 +22,13 @@ export const INSTAGRAM_URL = 'https://www.instagram.com/sefvietnam/';
 export const LINKEDIN_URL = 'https://www.linkedin.com/company/sefvietnam/';
 
 // ─── Assets ───
-// WSO partnership badge — horizontal variant is delivered & preferred for the inline band.
-export const WSO_BADGE_SRC = '/logos/partners/wso-horizontal.png';
+// Logo image files live in src/assets/logos/** and flow through the astro:assets
+// pipeline (optimized + cache-busted at build). site.ts holds only FILENAMES; the
+// landing page glob-imports the matching asset by filename — see index.astro.
 
 // Network / affiliations — partners, collaborations, and where alumni land.
 // Each entry carries a relationship `label` so one section can hold mixed
-// relationship types. Files live in /public/logos/partners/.
+// relationship types. Files live in src/assets/logos/partners/.
 export const PARTNERS = [
   { name: 'Wall Street Oasis',    file: 'wso-horizontal.png',      label: 'Official Partner' },
   { name: 'FPT Securities',       file: 'fpt-securities.jpg',      label: 'Alumni Destination' },
@@ -36,9 +37,9 @@ export const PARTNERS = [
 ] as const;
 
 // University marquee data — ordered as the marquee should read.
-// Files live in /public/logos/universities/. Filenames must match exactly (a
-// mismatch 404s the logo). Adding/removing a school = one line here + drop (or
-// remove) the file; no markup change needed.
+// Files live in src/assets/logos/universities/. Filenames must match exactly (a
+// mismatch fails the build via resolveLogo). Adding/removing a school = one line
+// here + drop (or remove) the matching file; no markup change needed.
 export const UNIVERSITIES = [
   { name: 'University of California, Berkeley',           file: 'uc-berkeley.png' },
   { name: 'New York University',                          file: 'new-york-university.png' },

@@ -41,7 +41,10 @@ const reports = defineCollection({
       analysts: z.array(z.string()),
 
       // Assets
-      cover: z.string(), // Cover image path (string for now, can upgrade to image() later)
+      // cover: image() — resolves the frontmatter path to an optimized ImageMetadata
+      // object at build (astro:assets). Path is relative to the MDX file, e.g.
+      // ../../assets/images/foo.webp. Pages render it via <Image src={data.cover} />.
+      cover: image(),
       pdfUrl: z.string(), // Full-report download URL or path (PUB-04).
 
       // Flags

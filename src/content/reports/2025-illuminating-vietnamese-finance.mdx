@@ -8,10 +8,13 @@ division: Macro
 type: Insight
 sector: ["Our Story"]
 analysts: ["Nam Nguyen"]
-cover: /images/illuminating-cover.png
+cover: ../../assets/images/illuminating-cover.webp
 pdfUrl: "#"
 publishedAt: 2025-08-25
 ---
+
+import { Image } from 'astro:assets';
+import missionImg from '../../assets/images/illuminating-mission.webp';
 
 **Hi! We are Saigon Equities Forum.**
 
@@ -19,7 +22,7 @@ We are a research collective dedicated to bridging knowledge gaps on the Vietnam
 market and its role within the global financial system.
 
 <figure>
-  <img src="/images/illuminating-mission.png" alt="Our mission: to create a platform where ideas on Vietnam's capital markets can be debated, research is accessible and shared freely, and the next generation of thinkers can engage in reshaping their community." />
+  <Image loading="lazy" src={missionImg} alt="Our mission: to create a platform where ideas on Vietnam's capital markets can be debated, research is accessible and shared freely, and the next generation of thinkers can engage in reshaping their community." />
   <figcaption>Our founding mission.</figcaption>
 </figure>
 

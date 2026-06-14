@@ -8,10 +8,15 @@ division: Macro
 type: Insight
 sector: ["Market Structure"]
 analysts: ["Hung Tran"]
-cover: /images/em-status-cover.png
+cover: ../../assets/images/em-status-cover.webp
 pdfUrl: "#"
 publishedAt: 2025-09-07
 ---
+
+import { Image } from 'astro:assets';
+import emLiquidity from '../../assets/images/em-status-liquidity.webp';
+import emPbGrowth from '../../assets/images/em-status-pb-growth.webp';
+import emConsumer from '../../assets/images/em-status-consumer.webp';
 
 Since the launch of Đổi Mới, Vietnam has propelled itself from one of the world's poorest
 nations to a dynamic middle-income economy in mere decades. Today, with an FTSE Russell
@@ -30,7 +35,7 @@ interest fed by strong manufacturing exports and "China + 1" supply-chain shifts
 increasingly tech-driven workforce, and a steadily more supportive legislative environment.
 
 <figure>
-  <img src="/images/em-status-liquidity.png" alt="Monthly equity trading value across ASEAN markets in July 2025, with Vietnam leading peers including Thailand, Singapore, Indonesia, Malaysia and the Philippines" />
+  <Image loading="lazy" src={emLiquidity} alt="Monthly equity trading value across ASEAN markets in July 2025, with Vietnam leading peers including Thailand, Singapore, Indonesia, Malaysia and the Philippines" />
   <figcaption>Vietnam led ASEAN peers on monthly equity trading value in July 2025.</figcaption>
 </figure>
 
@@ -44,7 +49,7 @@ unlock billions of dollars in foreign net inflows by 2030 as global index funds 
 toward Vietnamese equities.
 
 <figure>
-  <img src="/images/em-status-pb-growth.png" alt="Quarterly price-to-book growth from Q2 2014 to 2025 showing Vietnam outpacing ASEAN regional peers including the Philippines, Indonesia, Malaysia, Singapore and Thailand" />
+  <Image loading="lazy" src={emPbGrowth} alt="Quarterly price-to-book growth from Q2 2014 to 2025 showing Vietnam outpacing ASEAN regional peers including the Philippines, Indonesia, Malaysia, Singapore and Thailand" />
   <figcaption>On price-to-book growth, Vietnam has outpaced its ASEAN peers.</figcaption>
 </figure>
 
@@ -56,7 +61,7 @@ domestic investment increasingly fuel growth — the kind of broadening base tha
 emerging-market re-rating durable rather than a one-off pop.
 
 <figure>
-  <img src="/images/em-status-consumer.png" alt="Chart showing the rising number of Vietnamese people above the USD 11 per day threshold, illustrating a growing middle class and consumer economy" />
+  <Image loading="lazy" src={emConsumer} alt="Chart showing the rising number of Vietnamese people above the USD 11 per day threshold, illustrating a growing middle class and consumer economy" />
   <figcaption>A fast-expanding middle class is pulling Vietnam toward a consumer economy.</figcaption>
 </figure>
 

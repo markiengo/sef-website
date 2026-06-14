@@ -15,10 +15,14 @@ keyStats:
   - { label: "Medical tourism CAGR", value: "~16%" }
   - { label: "Public hospital load", value: "~200%" }
 analysts: ["Duy Nguyen", "Huy Ta"]
-cover: /images/healthcare-report-cover.jpg
+cover: ../../assets/images/healthcare-report-cover.jpg
 pdfUrl: https://lnkd.in/eAC3RsS8
 publishedAt: 2026-02-26
 ---
+
+import { Image } from 'astro:assets';
+import hcOverview from '../../assets/images/healthcare-market-overview.webp';
+import hcPharma from '../../assets/images/healthcare-pharmaceutical.webp';
 
 Healthcare is the rare Vietnamese sector where the bull case needs no forecasting
 heroics — it is written into the demographics. A population of more than **100 million**
@@ -50,7 +54,7 @@ and pharmaceutical consumption — the hallmarks of a long-duration growth indus
 a cyclical one.
 
 <figure>
-  <img src="/images/healthcare-market-overview.png" alt="Vietnam healthcare expenditure projection 2019–2028F and capital invested per sector post-Covid, showing healthcare among the most resilient growth sectors" />
+  <Image loading="lazy" src={hcOverview} alt="Vietnam healthcare expenditure projection 2019–2028F and capital invested per sector post-Covid, showing healthcare among the most resilient growth sectors" />
   <figcaption>Health expenditure climbs steadily through 2028F, with healthcare contributing roughly 5% of GDP.</figcaption>
 </figure>
 
@@ -79,7 +83,7 @@ them** — still handle roughly **85% of the retail market**, leaving consolidat
 distribution as a multi-year opportunity in their own right.
 
 <figure>
-  <img src="/images/healthcare-pharmaceutical.png" alt="Vietnam pharmaceutical market — domestic vs imported share 2019–2022 and top companies by 2023 revenue including DHG Pharma, Sanofi, Traphaco, Stelapharm and Imexpharm" />
+  <Image loading="lazy" src={hcPharma} alt="Vietnam pharmaceutical market — domestic vs imported share 2019–2022 and top companies by 2023 revenue including DHG Pharma, Sanofi, Traphaco, Stelapharm and Imexpharm" />
   <figcaption>Domestic players lead by volume, but a long fragmented retail tail leaves room to consolidate.</figcaption>
 </figure>
 
